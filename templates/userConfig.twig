@@ -1,0 +1,117 @@
+{% extends "base.twig" %}
+{% block title %}用户设置{% endblock %}
+
+{% block content %}
+{% include 'component/navbar.twig' %}
+<div class="container mt-5 mb-4">
+    <h2>用户设置</h2>
+
+    {% if result is not null %}
+    {% if result != "Success" %}
+    <div class="alert alert-danger" role="alert">
+        {{ result }}
+    </div>
+    {% else %}
+    <div class="alert alert-success" role="alert">
+        保存成功！
+    </div>
+    {% endif %}
+    {% endif %}
+
+    <div class="row">
+        <div class="col-md-6 mb-3 mb-md-0">
+            <div class="card">
+                <form method="post">
+                    <div class="card-body">
+                        <h5 class="card-title">修改密码</h5>
+                        <div class="form-floating mb-3">
+                            <input type="password" class="form-control" id="oldPasswd" name="oldPasswd" placeholder="Password">
+                            <label for="oldPasswd">旧密码</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="password" class="form-control" id="newPasswd" name="newPasswd" placeholder="new_password" autocomplete="new-password">
+                            <label for="newPasswd">新密码</label>
+                        </div>
+                        <div class="form-floating">
+                            <input type="password" class="form-control" id="confirmPasswd" name="confirmPasswd" placeholder="new_password" autocomplete="new-password">
+                            <label for="confirmPasswd">确认新密码</label>
+                            <div class="form-text">需要大写、小写字母和数字。留空则不修改。</div>
+                        </div>
+                    </div>
+                    <div class="card-footer text-body-secondary">
+                        <button type="submit" name="type" value="changePasswd" class="btn btn-primary">保存</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="col-md-6">
+
+            <div class="card mb-3">
+                <form method="post">
+                    <div class="card-body">
+                        <h5 class="card-title">用户信息</h5>
+                        <div class="input-group">
+                            <div class="form-floating">
+                                <input type="text" class="form-control" id="uid" name="uid" placeholder="UUID" value="{{ uid }}">
+                                <label for="uid">用户 UUID</label>
+                            </div>
+                            <span class="input-group-text" aria-describedby="basic-addon1"><a href="#" id="generateLink" style="text-decoration: none;">∞</a></span>
+                        </div>
+                        <div class="form-text text-danger mb-3">用户 UUID 用于直接获取订阅数据，请妥善保管好用户 UUID！</div>
+
+                        <div class="form-floating">
+                            <input type="text" class="form-control" id="username" name="username" placeholder="username" value="{{ username }}">
+                            <label for="username">用户名</label>
+                        </div>
+                    </div>
+                    <div class="card-footer text-body-secondary align-item-right">
+                        <button type="submit" name="type" value="changeUserInfo" class="btn btn-primary">保存</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="card">
+                <form method="post">
+                    <div class="card-body">
+                        <h5 class="card-title">其他设置</h5>
+                        <div class="form-floating">
+                            <input type="text" class="form-control" id="customConfigUrl" name="customConfigUrl" placeholder="https://"
+                                {% if customConfigUrl is not null %}value="{{ customConfigUrl }}" {% endif %}>
+                            <label for="customConfigUrl">自定义远程配置</label>
+                        </div>
+                    </div>
+                    <div class="card-footer text-body-secondary align-item-right">
+                        <button type="submit" name="type" value="changeCustomConfig" class="btn btn-primary">保存</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    function generateUUID() {
+        // 生成一个随机的UUID
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+            var r = Math.random() * 16 | 0,
+                v = c == 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+        });
+    }
+
+    // 获取具有id为"uid"的input元素和具有id为"generateLink"的链接元素
+    var uidInput = document.getElementById("uid");
+    var generateLink = document.getElementById("generateLink");
+
+    // 添加点击事件监听器
+    generateLink.addEventListener("click", function (event) {
+        event.preventDefault(); // 防止链接跳转
+        if (uidInput) {
+            uidInput.value = generateUUID();
+        } else {
+            console.log("The input element with id 'uid' was not found.");
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,20 @@
+{
+    "name": "summonhim/subman",
+    "description": "Subscribe Manager",
+    "type": "project",
+    "license": "WTFPL license",
+    "autoload": {
+        "psr-4": {
+            "Subman\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "SummonHIM",
+            "email": "summonhim@qq.com"
+        }
+    ],
+    "require": {
+        "twig/twig": "^3.7"
+    }
+}

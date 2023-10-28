@@ -1,0 +1,54 @@
+{% block collapseSubscriptions %}
+<div class="accordion-item">
+    <h2 class="accordion-header">
+        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSubscriptions-{{ loop.index }}" aria-expanded="true"
+            aria-controls="collapseSubscriptions-{{ loop.index }}">
+            订阅链接
+        </button>
+    </h2>
+    <div id="collapseSubscriptions-{{ loop.index }}" class="accordion-collapse collapse show">
+        <div class="accordion-body">
+            <div class="alert alert-primary" role="alert">该链接将自动重定向至现有订阅。你可以不用经常更换订阅链接。若链接失效则尽快联系我。</div>
+            {% for sub in item.subscribes %}
+            {% set originalUrl = subApiUrl ~ '?sub=' ~ sub.sid ~ '&user=' ~ uid %}
+            {% set convertUrl = subApiUrl ~ '?sub=' ~ sub.sid ~ '&user=' ~ uid ~ '&convert=true' %}
+            {% if customConfig is not empty %}
+                {% set convertUrl = convertUrl ~ '&config=' ~ customConfig | url_encode %}
+            {% endif %}
+            {% set suggestionName = item.name ~ ' 的 ' ~ sub.name %}
+
+            {% if not loop.first %}
+            <hr>{% endif %}
+            <h5>{{ sub.name }}</h5>
+            <div class="mb-3 row align-items-center">
+                <label class="form-label card-text">原版订阅</label>
+                <div class="col-lg-10">
+                    <input class="form-control" type="text" value="{{ originalUrl }}" readonly>
+                </div>
+                <div class="btn-group col-lg-2" role="group">
+                    <a class="btn btn-outline-primary"
+                        href="clash://install-config?url={{ originalUrl | url_encode }}&name={{ suggestionName | url_encode }}"
+                        target="_blank">导入到Clash</a>
+                </div>
+            </div>
+            <div class="mb-3 row align-items-center">
+                <label class="form-label card-text">改版订阅（荐）</label>
+                <div class="col-lg-10">
+                    <input class="form-control" type="text" value="{{ convertUrl }}" readonly>
+                </div>
+                <div class="btn-group col-lg-2" role="group">
+                    <a class="btn btn-outline-primary"
+                        href="clash://install-config?url={{ convertUrl | url_encode }}&name={{ suggestionName | url_encode }}"
+                        target="_blank">导入到Clash</a>
+                </div>
+                <div class="form-text">你可为此链接使用<code>config</code>参数来自定义远程配置。前去用户配置即可手动自定义。</div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label card-text">建议名称</label>
+                <input class="form-control" type="text" value="{{ suggestionName }}" readonly>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

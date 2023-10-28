@@ -1,0 +1,36 @@
+{% block collapseAccounts %}
+<div class="accordion-item">
+    <h2 class="accordion-header">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAccounts-{{ loop.index }}"
+            aria-expanded="false" aria-controls="collapseAccounts-{{ loop.index }}">
+            账号信息
+        </button>
+    </h2>
+    <div id="collapseAccounts-{{ loop.index }}" class="accordion-collapse collapse">
+        <div class="accordion-body">
+            <!-- Begin collapseAccounts -->
+            <div class="row align-items-center mb-3">
+                <label class="col-form-label">官网</label>
+                <div class="col-sm-10">
+                    <input class="form-control" type="text" value="{{ item.sub_hp }}" readonly>
+                </div>
+                <div class="btn-group col-sm-2" role="group"><a class="btn btn-outline-primary" href="{{ item.sub_hp }}" target="_blank">访问</a>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label card-text">账号</label>
+                <input class="form-control" type="text" value="{{ item.sub_account }}" readonly>
+            </div>
+            <div class="mb-3">
+                <label class="form-label card-text">密码</label>
+                <input class="form-control" type="text" value="{{ item.sub_password }}" readonly>
+            </div>
+            <div>
+                <label class="form-label card-text">邀请码</label>
+                <input class="form-control" type="text" value="{{ item.sub_aff }}" readonly>
+            </div>
+            <!-- End collapseAccounts -->
+        </div>
+    </div>
+</div>
+{% endblock %}
