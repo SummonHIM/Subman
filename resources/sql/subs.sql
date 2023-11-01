@@ -20,33 +20,33 @@ CREATE TABLE IF NOT EXISTS `groups` (
 
 -- 数据导出被取消选择。
 
--- 导出  表 subs.groupshare 结构
-CREATE TABLE IF NOT EXISTS `groupshare` (
+-- 导出  表 subs.group_share 结构
+CREATE TABLE IF NOT EXISTS `group_share` (
   `gsid` uuid NOT NULL DEFAULT uuid(),
   `gid` uuid NOT NULL DEFAULT uuid(),
-  `name` text NOT NULL,
+  `name` varchar(50) NOT NULL,
   `account` varchar(255) NOT NULL,
   `password` varchar(50) NOT NULL,
   `manage` varchar(255) NOT NULL,
   PRIMARY KEY (`gsid`) USING BTREE,
   KEY `gid` (`gid`) USING BTREE,
-  CONSTRAINT `groupshare_ibfk_1` FOREIGN KEY (`gid`) REFERENCES `groups` (`gid`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `group_share_ibfk_1` FOREIGN KEY (`gid`) REFERENCES `groups` (`gid`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- 数据导出被取消选择。
 
--- 导出  表 subs.subscribes 结构
-CREATE TABLE IF NOT EXISTS `subscribes` (
+-- 导出  表 subs.group_subscribes 结构
+CREATE TABLE IF NOT EXISTS `group_subscribes` (
   `sid` uuid NOT NULL DEFAULT uuid(),
   `gid` uuid NOT NULL DEFAULT uuid(),
   `name` varchar(25) NOT NULL,
   `original_url` varchar(255) NOT NULL,
   `convert_url` varchar(255) NOT NULL,
   `target` char(15) NOT NULL DEFAULT 'clash',
-  `options` text NOT NULL DEFAULT 'emoji=true&udp=true&new_name=true',
+  `options` varchar(255) NOT NULL DEFAULT 'emoji=true&udp=true&new_name=true',
   PRIMARY KEY (`sid`) USING BTREE,
   KEY `gid` (`gid`) USING BTREE,
-  CONSTRAINT `subscribes_ibfk_1` FOREIGN KEY (`gid`) REFERENCES `groups` (`gid`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `group_subscribes_ibfk_1` FOREIGN KEY (`gid`) REFERENCES `groups` (`gid`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- 数据导出被取消选择。
@@ -59,13 +59,14 @@ CREATE TABLE IF NOT EXISTS `users` (
   `isadmin` tinyint(1) NOT NULL DEFAULT 0,
   `custom_config` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`uid`),
+  UNIQUE KEY `username` (`username`),
   CONSTRAINT `conIsAdmin` CHECK (`isadmin` in (0,1))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- 数据导出被取消选择。
 
--- 导出  表 subs.usersubs 结构
-CREATE TABLE IF NOT EXISTS `usersubs` (
+-- 导出  表 subs.user_subscribes 结构
+CREATE TABLE IF NOT EXISTS `user_subscribes` (
   `usid` uuid NOT NULL DEFAULT uuid(),
   `uid` uuid NOT NULL DEFAULT uuid(),
   `gid` uuid NOT NULL DEFAULT uuid(),
@@ -73,8 +74,8 @@ CREATE TABLE IF NOT EXISTS `usersubs` (
   PRIMARY KEY (`usid`) USING BTREE,
   KEY `usersubs_ibfk_uid` (`uid`) USING BTREE,
   KEY `usersubs_ibfk_gid` (`gid`) USING BTREE,
-  CONSTRAINT `usersubs_ibfk_gid` FOREIGN KEY (`gid`) REFERENCES `groups` (`gid`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `usersubs_ibfk_uid` FOREIGN KEY (`uid`) REFERENCES `users` (`uid`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `user_subscribes_ibfk_gid` FOREIGN KEY (`gid`) REFERENCES `groups` (`gid`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `user_subscribes_ibfk_uid` FOREIGN KEY (`uid`) REFERENCES `users` (`uid`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- 数据导出被取消选择。
