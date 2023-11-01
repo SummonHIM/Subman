@@ -2,7 +2,7 @@
     "name": "summonhim/subman",
     "description": "Subscribe Manager",
     "type": "project",
-    "license": "WTFPL license",
+    "license": "MPL-2.0",
     "autoload": {
         "psr-4": {
             "Subman\\": "src/"
