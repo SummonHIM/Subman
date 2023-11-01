@@ -65,9 +65,6 @@ class Router
                 case $baseUrl . '/api/subscribe':
                     Subscribes::getSubscribesUrl();
                     break;
-                case $baseUrl . '/api.php':
-                    Subscribes::getSubscribesUrl();
-                    break;
                 default:
                     header("Location: " . $baseUrl . "/");
                     break;
