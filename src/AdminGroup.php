@@ -4,7 +4,10 @@ namespace Subman;
 
 class AdminGroup extends Administrator
 {
-    public static function onGroupPost()
+    /**
+     * 处理 Post 操作
+     */
+    public static function onGroupPost(): void
     {
         $self = new self();
         switch ($_POST['type']) {
@@ -38,7 +41,10 @@ class AdminGroup extends Administrator
         }
     }
 
-    private function handleUpdateGroupConfig()
+    /**
+     * 处理更新分组设置
+     */
+    private function handleUpdateGroupConfig(): void
     {
         if (empty($_POST['newGid']) || empty($_POST['gid']) || empty($_POST['name'])) {
             $this->renderGroup("分组 UUID 和分组名称不得为空。");
@@ -104,7 +110,10 @@ class AdminGroup extends Administrator
         }
     }
 
-    private function handleDeleteGroup()
+    /**
+     * 处理删除分组
+     */
+    private function handleDeleteGroup(): void
     {
         if (empty($_POST['gid'])) {
             $this->renderGroup("分组 UUID 不得为空。");
@@ -135,7 +144,10 @@ class AdminGroup extends Administrator
         }
     }
 
-    private function handleUpdateCurrentSub()
+    /**
+     * 处理更新分组订阅
+     */
+    private function handleUpdateCurrentSub(): void
     {
         if (empty($_POST['newSid']) || empty($_POST['sid']) || empty($_POST['gid'])) {
             $this->renderGroup("订阅 UUID 和分组 UUID（隐藏参数）不得为空。");
@@ -201,7 +213,10 @@ class AdminGroup extends Administrator
         }
     }
 
-    private function handleDeleteCurrentSub()
+    /**
+     * 处理删除分组订阅
+     */
+    private function handleDeleteCurrentSub(): void
     {
         if (empty($_POST['sid']) || empty($_POST['gid'])) {
             $this->renderGroup("订阅 UUID 和分组 UUID（隐藏参数）不得为空。");
@@ -233,7 +248,10 @@ class AdminGroup extends Administrator
         }
     }
 
-    private function handleCreateNewSub()
+    /**
+     * 处理创建新分组订阅
+     */
+    private function handleCreateNewSub(): void
     {
         if (empty($_POST['gid']) || empty($_POST['name']) || empty($_POST['original_url']) || empty($_POST['convert_url'])) {
             $this->renderGroup("分组 UUID（隐藏参数）、订阅名称、原始订阅网址或转换订阅网址不得为空。");
@@ -280,7 +298,10 @@ class AdminGroup extends Administrator
         }
     }
 
-    private function handleUpdateCurrentAccount()
+    /**
+     * 处理更新共享账号
+     */
+    private function handleUpdateCurrentAccount(): void
     {
         if (empty($_POST['gsid']) || empty($_POST['gid']) || empty($_POST['name']) || empty($_POST['account']) || empty($_POST['password']) || empty($_POST['manage'])) {
             $this->renderGroup("所有可填项均不得为空。");
@@ -330,7 +351,10 @@ class AdminGroup extends Administrator
         }
     }
 
-    private function handleDeleteCurrentAccount()
+    /**
+     * 处理删除共享账号
+     */
+    private function handleDeleteCurrentAccount(): void
     {
         if (empty($_POST['gsid']) || empty($_POST['gid'])) {
             $this->renderGroup("订阅 UUID（隐藏参数）和共享账号 UUID（隐藏参数）不得为空。");
@@ -362,7 +386,10 @@ class AdminGroup extends Administrator
         }
     }
 
-    private function handleCreateNewAccount()
+    /**
+     * 处理创建新共享账号
+     */
+    private function handleCreateNewAccount(): void
     {
         if (empty($_POST['gid']) || empty($_POST['name']) || empty($_POST['account']) || empty($_POST['password']) || empty($_POST['manage'])) {
             $this->renderGroup("所有可填项均不得为空。");

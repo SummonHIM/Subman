@@ -4,7 +4,10 @@ namespace Subman;
 
 class AdminUser extends Administrator
 {
-    public static function onUserPost()
+    /**
+     * 处理 Post 操作
+     */
+    public static function onUserPost(): void
     {
         $self = new self();
         switch ($_POST['type']) {
@@ -29,7 +32,10 @@ class AdminUser extends Administrator
         }
     }
 
-    private function handleUpdateUserConfig()
+    /**
+     * 处理更新用户设置
+     */
+    private function handleUpdateUserConfig(): void
     {
         if (empty($_POST['newUid']) || empty($_POST['uid']) || empty($_POST['newUsername']) || empty($_POST['username'])) {
             $this->renderUser("用户 UUID 和用户名不得为空。");
@@ -108,7 +114,10 @@ class AdminUser extends Administrator
         }
     }
 
-    private function handleDeleteUser()
+    /**
+     * 处理删除用户
+     */
+    private function handleDeleteUser(): void
     {
         if (empty($_POST['uid'])) {
             $this->renderUser("用户 UUID 不得为空。");
@@ -139,7 +148,10 @@ class AdminUser extends Administrator
         }
     }
 
-    private function handleUpdateCurrentSub()
+    /**
+     * 处理更新用户现有分组
+     */
+    private function handleUpdateCurrentSub(): void
     {
         if (empty($_POST['uid']) || empty($_POST['gid'])) {
             $this->renderUser("用户 UUID 和分组 UUID 不得为空。");
@@ -174,7 +186,10 @@ class AdminUser extends Administrator
         }
     }
 
-    private function handleDeleteCurrentSub()
+    /**
+     * 处理删除用户现有分组
+     */
+    private function handleDeleteCurrentSub(): void
     {
         if (empty($_POST['uid']) || empty($_POST['gid'])) {
             $this->renderUser("用户 UUID 和分组 UUID 不得为空。");
@@ -206,7 +221,10 @@ class AdminUser extends Administrator
         }
     }
 
-    private function handleCreateNewSub()
+    /**
+     * 处理添加新分组
+     */
+    private function handleCreateNewSub(): void
     {
         if (empty($_POST['uid']) || empty($_POST['gid'])) {
             $this->renderUser("用户 UUID 和分组 UUID 不得为空。");

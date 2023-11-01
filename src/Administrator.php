@@ -29,7 +29,11 @@ class Administrator
         $this->uuidPattern = '/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/';
     }
 
-    private function listUsers(?string $message = null)
+    /**
+     * 渲染列出所有用户
+     * @param string $message 向网页打印错误信息
+     */
+    private function listUsers(?string $message = null): void
     {
         $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
 
@@ -55,7 +59,11 @@ class Administrator
         ));
     }
 
-    private function listGroups(?string $message = null)
+    /**
+     * 渲染列出所有分组
+     * @param string $message 向网页打印错误信息
+     */
+    private function listGroups(?string $message = null): void
     {
         $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
 
@@ -82,9 +90,10 @@ class Administrator
     }
 
     /**
-     * 渲染后台管理页面
+     * 处理 Get 操作
+     * @param string $message 向网页打印错误信息
      */
-    public static function renderMain(?string $message = null)
+    public static function renderMain(?string $message = null): void
     {
         $self = new Self();
 
@@ -101,7 +110,11 @@ class Administrator
         }
     }
 
-    public static function renderUser(?string $message = null)
+    /**
+     * 渲染编辑用户
+     * @param string $message 向网页打印错误信息
+     */
+    public static function renderUser(?string $message = null): void
     {
         $self = new Self();
 
@@ -130,7 +143,11 @@ class Administrator
         ));
     }
 
-    public static function renderGroup(?string $message = null)
+    /**
+     * 渲染编辑分组
+     * @param string $message 向网页打印错误信息
+     */
+    public static function renderGroup(?string $message = null): void
     {
         $self = new Self();
 
@@ -155,6 +172,9 @@ class Administrator
         ));
     }
 
+    /**
+     * 处理 Post 操作
+     */
     public static function onPost(): void
     {
         $self = new self();
@@ -171,6 +191,9 @@ class Administrator
         }
     }
 
+    /**
+     * 处理创建用户操作
+     */
     private function handleCreateNewUser(): void
     {
         if (empty($_POST['username']) || empty($_POST['password'])) {
@@ -223,6 +246,9 @@ class Administrator
         }
     }
 
+    /**
+     * 处理创建分组操作
+     */
     private function handleCreateNewGroup(): void
     {
         if (empty($_POST['name'])) {
@@ -262,7 +288,11 @@ class Administrator
         }
     }
 
-    public function generateUUID()
+    /**
+     * 生成 UUID
+     * @return string UUID
+     */
+    public function generateUUID(): string
     {
         if (function_exists('random_bytes')) {
             $data = random_bytes(16);
@@ -278,7 +308,14 @@ class Administrator
         return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
     }
 
-    public function checkDuplicate(string $table, string $colName, string $checkString)
+    /**
+     * 检查内容是否有重复
+     * @param string $table 数据库表名
+     * @param string $colName 列名
+     * @param string $checkString 需检查的内容
+     * @return bool 若查出来了则 True，没查出来则 False
+     */
+    public function checkDuplicate(string $table, string $colName, string $checkString): bool
     {
         $checkResult = $this->db->getRowbyName($table, $colName, array($colName => $checkString));
         if (empty($checkResult))
