@@ -7,6 +7,22 @@ Subscribe Manager/订阅管理器
 3. 复制 `config.example.php` 到 `config.php`。填入适当的数据。
 4. 放入你的网页服务器中即可。
 
+## Nginx
+### 无子路径
+```
+location / {
+    try_files $uri $uri/ /index.php?$query_string;
+    include nginxconfig.io/general-assets.conf;
+}
+```
+### 有子路径
+```
+location /subs/ {
+    try_files $uri $uri/ /subs/index.php?$query_string;
+    include nginxconfig.io/general-assets.conf;
+}
+```
+
 ## 其他信息
 - 测试时使用 PHP 版本为 8.2.11。
 - MySQL 数据库可能会对 UUID 类型报错，如果嫌麻烦建议用 MariaDB。

@@ -107,11 +107,21 @@ class Subscribes
             ));
             header("Location: $url");
         } else {
-            // 过期了则打印过期错误
-            echo json_encode(array(
-                'Status' => 'Expire',
-                'Message' => 'Your subscription has expired, please renew.',
-            ));
+            // 过期了则返回带过期信息的配置
+            switch ($subscribes["target"]) {
+                case 'clash':
+                    echo "proxies:\n";
+                    echo "  - {name: 订阅已过期, type: ss, cipher: aes-128-gcm, server: dns.google, port: 4433, password: expire}\n";
+                    echo "proxy-groups:\n";
+                    echo "  - {name: 注意, type: select, proxies: [订阅已过期]}\n";
+                    break;
+                default:
+                    echo "proxies:\n";
+                    echo "  - {name: 订阅已过期, type: ss, cipher: aes-128-gcm, server: dns.google, port: 4433, password: expire}\n";
+                    echo "proxy-groups:\n";
+                    echo "  - {name: 注意, type: select, proxies: [订阅已过期]}\n";
+                    break;
+            }
         }
     }
 }
