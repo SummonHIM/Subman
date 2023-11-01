@@ -19,7 +19,7 @@ $cfg['Database']['Name'] = "subs";
  * 本站设置
  */
 // 主目录设置，用于子目录环境运行
-$cfg['WebSite']['BaseUrl'] = "/subs";
+$cfg['WebSite']['BaseUrl'] = "";
 // 启用调试模式
 $cfg['WebSite']['Debug'] = false;
 // 自定义 SubConverter 服务器

@@ -1,0 +1,133 @@
+{% extends "administrator.twig" %}
+
+{% block title %}{{ user.username }} - 用户管理 - 后台管理{% endblock %}
+{% block adminContent %}
+<style>
+    .form-witdh-uuid {
+        min-width: 355px;
+    }
+
+    .form-witdh-short-string {
+        min-width: 150px;
+    }
+
+    .form-witdh-medium-string {
+        min-width: 300px;
+    }
+
+    .form-witdh-long-string {
+        min-width: 550px;
+    }
+
+    .form-witdh-xx1 {
+        min-width: 550px;
+    }
+</style>
+
+<h2>{{ user.username }}</h2>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <h4>用户设置</h4>
+        <form method="post">
+            <input type="hidden" name="uid" value="{{ user.uid }}">
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="newUid" name="newUid" placeholder="用户 UUID" value="{{ user.uid }}">
+                <label for="newUid">用户 UUID</label>
+            </div>
+            <input type="hidden" name="username" value="{{ user.username }}">
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="newUsername" name="newUsername" placeholder="用户名" value="{{ user.username }}">
+                <label for="newUsername">用户名</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="customConfigUrl" name="customConfigUrl" placeholder="自定义远程配置"
+                    {% if user.custom_config is not null %}value="{{ user.custom_config }}" {% endif %}>
+                <label for="customConfigUrl">自定义远程配置</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="password" class="form-control" id="newPasswd" name="newPasswd" placeholder="new_password" autocomplete="new-password">
+                <label for="newPasswd">修改密码</label>
+                <div class="form-text">需要大写、小写字母和数字。长度不少于8个字符。留空则不修改。</div>
+            </div>
+            <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" name="isadmin" id="flexIsAdmin" {% if user.isadmin == 1 %}checked{% endif %}>
+                <label class="form-check-label" for="flexIsAdmin">
+                    设为管理员
+                </label>
+            </div>
+
+            <div class="float-end">
+                <button class="btn btn-danger" type="submit" name="type" value="deleteUser">删除此用户</button>
+                <button class="btn btn-primary" type="submit" name="type" value="updateUserConfig">保存</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <h4>用户分组</h4>
+        <div class="table-responsive text-nowrap">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col">分组名称</th>
+                        <th scope="col">过期时间</th>
+                        <th scope="col">操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for userSub in userSubs %}
+                    <tr>
+                        <form method="post">
+                            <input type="hidden" name="uid" value="{{ user.uid }}">
+                            <td>
+                                <input class="form-control form-witdh-medium-string" type="text" id="username" value="{{ groupNames[userSub.gid] }}" readonly>
+                                <input type="hidden" name="gid" value="{{ userSub.gid }}">
+                            </td>
+                            <td>
+                                <input class="form-control" type="datetime-local" id="expire" name="expire" value="{{ userSub.expire | date('Y-m-d\\TH:i:s') }}">
+                            </td>
+                            <td>
+                                <button class="btn btn-danger" type="submit" name="type" value="deleteCurrentSub">删除</button>
+                                <button class="btn btn-primary" type="submit" name="type" value="updateCurrentSub">保存</button>
+                            </td>
+                        </form>
+                    </tr>
+                    {% endfor %}
+                    <tr>
+                        <form method="post">
+                            <input type="hidden" name="uid" value="{{ user.uid }}">
+                            <td>
+                                <select class="form-select form-witdh-medium-string" name="gid" required>
+                                    <option disabled selected hidden>添加新分组</option>
+                                    {% for key, value in groupNames %}
+
+                                    {% set itemFound = false %}
+                                    {% for userSub in userSubs %}
+                                    {% if key == userSub.gid %}
+                                    {% set itemFound = true %}
+                                    {% endif %}
+                                    {% endfor %}
+
+                                    {% if not itemFound %}
+                                    <option value="{{ key }}">{{ value }}</option>
+                                    {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </td>
+                            <td>
+                                <input class="form-control" type="datetime-local" id="expire" name="expire">
+                            </td>
+                            <td>
+                                <button class="btn btn-primary" type="submit" name="type" value="createNewSub">添加</button>
+                            </td>
+                        </form>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

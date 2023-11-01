@@ -14,9 +14,21 @@ class UserConfig
     public function __construct()
     {
         $this->cfg = new Config();
+
+        // 若Session数据不完整则退出
+        if (!isset($_SESSION['username']) || !isset($_SESSION['uid'])) {
+            http_response_code(401);
+            if ($_SERVER["REQUEST_METHOD"] == "GET")
+                header("Location: " . $this->cfg->getValue('WebSite', 'BaseUrl') . "/");
+            exit();
+        }
+
         $this->db = new Database();
     }
 
+    /**
+     * 响应修改密码
+     */
     private function handleChangePasswd()
     {
         if (empty($_POST['oldPasswd']) || empty($_POST['newPasswd']) || empty($_POST['confirmPasswd'])) {
@@ -56,6 +68,9 @@ class UserConfig
         }
     }
 
+    /**
+     * 响应修改自定义设置
+     */
     private function handlechangeCustomConfig()
     {
         if (strlen($_POST['customConfigUrl']) > 255) {
@@ -76,6 +91,9 @@ class UserConfig
         }
     }
 
+    /**
+     * 响应修改用户信息
+     */
     private function handlechangeUserInfo()
     {
         $uuid_pattern = '/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/';
@@ -105,6 +123,9 @@ class UserConfig
         }
     }
 
+    /**
+     * 处理 Post 操作
+     */
     public static function onPost()
     {
         $self = new self();
@@ -124,29 +145,25 @@ class UserConfig
         }
     }
 
+    /**
+     * 渲染用户设置页面
+     */
     public static function renderUserConfig(?string $result = null)
     {
         $self = new self();
+        $user = $self->db->getRowbyName("users", "custom_config, isadmin", array("uid" => $_SESSION['uid']));
 
-        if (!isset($_SESSION['username'])) {
-            header("Location: " . $self->cfg->getValue('WebSite', 'BaseUrl') . "/");
-            exit();
-        } else {
-            $db = new Database();
-            $user = $db->getRowbyName("users", array("uid" => $_SESSION['uid']));
+        $loader = new \Twig\Loader\FilesystemLoader("templates");
+        $twig = new \Twig\Environment($loader);
 
-            $loader = new \Twig\Loader\FilesystemLoader("templates");
-            $twig = new \Twig\Environment($loader);
-
-            $template = $twig->load("userConfig.twig");
-            echo $template->render(array(
-                'customConfigUrl' => $user['custom_config'],
-                'isAdmin' => $user['isadmin'],
-                'baseUrl' => $self->cfg->getValue('WebSite', 'BaseUrl'),
-                'username' => $_SESSION['username'],
-                'uid' => $_SESSION['uid'],
-                'result' => $result
-            ));
-        }
+        $template = $twig->load("userConfig.twig");
+        echo $template->render(array(
+            'customConfigUrl' => $user['custom_config'],
+            'isAdmin' => $user['isadmin'],
+            'baseUrl' => $self->cfg->getValue('WebSite', 'BaseUrl'),
+            'username' => $_SESSION['username'],
+            'uid' => $_SESSION['uid'],
+            'result' => $result
+        ));
     }
 }

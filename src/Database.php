@@ -52,7 +52,7 @@ class Database
      * @param bool $fetchAll 若启用，则使用fetchAll返回多结果数组，否则仅返回首结果
      * @return 返回整行数据
      */
-    public function getRowbyName(string $table, array $searchArray, ?bool $fetchAll = false): array
+    public function getRowbyName(string $table, string $select, array $searchArray, ?bool $fetchAll = false): array
     {
         // 建立并循环并合并数组
         $conditions = [];
@@ -62,7 +62,7 @@ class Database
         $fullSearchCommand = implode(' AND ', $conditions);
 
         try {
-            $stmt = $this->dbh->prepare("SELECT * FROM $table WHERE $fullSearchCommand");
+            $stmt = $this->dbh->prepare("SELECT $select FROM $table WHERE $fullSearchCommand");
 
             foreach ($searchArray as $column => &$value) {
                 $stmt->bindParam(":$column", $value, \PDO::PARAM_STR);
@@ -147,6 +147,88 @@ class Database
 
             foreach ($searchArray as $column => &$value) {
                 $stmt->bindParam(":search_$column", $value, \PDO::PARAM_STR);
+            }
+
+            $stmt->execute();
+        } catch (\PDOException $e) {
+            if ($this->cfg->getValue('WebSite', 'Debug')) {
+                throw new \Exception($e->getMessage());
+            } else {
+                throw new \Exception("服务器内部错误！");
+            }
+        }
+    }
+
+    /**
+     * 返回整个表
+     * @param string $table 数据库表名
+     * @param ?array $limit LIMIT语句
+     * @return 返回整个表
+     */
+    public function getTable(string $table, string $select, ?array $limit = []): array
+    {
+        $limitClause = '';
+        if (!empty($limit) && count($limit) === 2) {
+            $offset = (int)$limit[0];
+            $rowCount = (int)$limit[1];
+            $limitClause = "LIMIT $offset, $rowCount";
+        }
+
+        try {
+            $stmt = $this->dbh->prepare("SELECT $select FROM $table $limitClause");
+            $stmt->execute();
+
+            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        } catch (\PDOException $e) {
+            if ($this->cfg->getValue('WebSite', 'Debug')) {
+                throw new \Exception($e->getMessage());
+            } else {
+                throw new \Exception("服务器内部错误！");
+            }
+        }
+    }
+
+    /**
+     * 获取表的行数量
+     * @param string $table
+     * @return int 行数量
+     */
+    public function getTableCount(string $table): int
+    {
+        try {
+            $stmt = $this->dbh->prepare("SELECT COUNT(*) as count FROM $table");
+            $stmt->execute();
+
+            return $stmt->fetch(\PDO::FETCH_ASSOC)['count'];
+        } catch (\PDOException $e) {
+            if ($this->cfg->getValue('WebSite', 'Debug')) {
+                throw new \Exception($e->getMessage());
+            } else {
+                throw new \Exception("服务器内部错误！");
+            }
+        }
+    }
+
+    /**
+     * 根据某列值删除整行
+     * @param string $table 数据库表名
+     * @param array $searchArray 欲搜索的键值，其中键名称作为列名，键值作为列值
+     * @return 返回整行数据
+     */
+    public function deleteRow(string $table, array $searchArray)
+    {
+        // 建立并循环并合并数组
+        $conditions = [];
+        foreach ($searchArray as $column => &$value) {
+            $conditions[] = "$column = :$column";
+        }
+        $fullSearchCommand = implode(' AND ', $conditions);
+
+        try {
+            $stmt = $this->dbh->prepare("DELETE FROM $table WHERE $fullSearchCommand");
+
+            foreach ($searchArray as $column => &$value) {
+                $stmt->bindParam(":$column", $value, \PDO::PARAM_STR);
             }
 
             $stmt->execute();

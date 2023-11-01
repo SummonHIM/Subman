@@ -25,7 +25,7 @@ class Authentication
     public function login(string $username, string $password): array
     {
         try {
-            $row = $this->db->getRowbyName("users", array("username" => $username));
+            $row = $this->db->getRowbyName("users", "uid, username, password", array("username" => $username));
 
             if ($row) {
                 $hashed_password = $row['password'];

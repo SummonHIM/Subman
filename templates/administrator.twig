@@ -1,6 +1,38 @@
 {% extends "base.twig" %}
-{% block title %}后台管理{% endblock %}
 
 {% block content %}
 {% include 'component/navbar.twig' %}
+{% if isAdmin == 1 %}
+<div class="container mt-5">
+    {% if execMessage is not null %}
+    {% if execMessage != "Success" %}
+    <div class="alert alert-danger" role="alert">
+        {{ execMessage }}
+    </div>
+    {% else %}
+    <div class="alert alert-success" role="alert">
+        保存成功！
+    </div>
+    {% endif %}
+    {% endif %}
+
+    <div class="row">
+        <div class="col-md-3 mb-3">
+            <ul class="nav nav-pills flex-column">
+                <li class="nav-item d-grid">
+                    <a class="nav-link {% if type == 'users' %}active{% endif %}" href="{{ baseUrl }}/admin?type=users">
+                        用户管理
+                    </a>
+                    <a class="nav-link {% if type == 'groups' %}active{% endif %}" href="{{ baseUrl }}/admin?type=groups">
+                        分组管理
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="col-md-9">
+            {% block adminContent %}{% endblock %}
+        </div>
+    </div>
+</div>
+{% endif %}
 {% endblock %}

@@ -1,0 +1,223 @@
+{% extends "administrator.twig" %}
+
+{% block title %}{{ group.name }} - 订阅管理 - 后台管理{% endblock %}
+{% block adminContent %}
+<style>
+    .form-witdh-uuid {
+        min-width: 355px;
+    }
+
+    .form-witdh-short-string {
+        min-width: 150px;
+    }
+
+    .form-witdh-medium-string {
+        min-width: 300px;
+    }
+
+    .form-witdh-long-string {
+        min-width: 550px;
+    }
+
+    .form-witdh-xx1 {
+        min-width: 550px;
+    }
+</style>
+
+<h2>{{ group.name }}</h2>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <form method="post">
+            <h4>分组设置</h4>
+            <input type="hidden" name="gid" value="{{ group.gid }}">
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="newGid" name="newGid" placeholder="分组 UUID" value="{{ group.gid }}">
+                <label for="newGid">分组 UUID</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="name" name="name" placeholder="分组名称" value="{{ group.name }}">
+                <label for="name">分组名称</label>
+            </div>
+
+            <h4>分组所购机场信息</h4>
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="sub_hp" name="sub_hp" placeholder="机场官网网址" value="{{ group.sub_hp }}">
+                <label for="sub_hp">机场官网网址</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="sub_account" name="sub_account" placeholder="机场登录账号" value="{{ group.sub_account }}">
+                <label for="sub_account">机场登录账号</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="sub_password" name="sub_password" placeholder="机场登录密码" value="{{ group.sub_password }}">
+                <label for="sub_password">机场登录密码</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="sub_aff" name="sub_aff" placeholder="机场邀请码" value="{{ group.sub_aff }}">
+                <label for="sub_aff">机场邀请码</label>
+            </div>
+            <div class="float-end">
+                <button class="btn btn-danger" type="submit" name="type" value="deleteGroup">删除此分组</button>
+                <button class="btn btn-primary" type="submit" name="type" value="updateGroupConfig">保存</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <h4>分组订阅</h4>
+        <div class="table-responsive text-nowrap">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col">订阅 UUID</th>
+                        <th scope="col">订阅名称</th>
+                        <th scope="col">原始订阅网址</th>
+                        <th scope="col">转换订阅网址</th>
+                        <th scope="col"><a class="text-decoration-none"
+                                href="https://github.com/tindy2013/subconverter/blob/master/README-cn.md#%E6%94%AF%E6%8C%81%E7%B1%BB%E5%9E%8B" target="_blank">转换目标</a>
+                        </th>
+                        <th scope="col"><a class="text-decoration-none"
+                                href="https://github.com/tindy2013/subconverter/blob/master/README-cn.md#%E8%BF%9B%E9%98%B6%E9%93%BE%E6%8E%A5" target="_blank">转换选项</a>
+                        </th>
+                        <th scope="col">操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for subscribe in subscribes %}
+                    <tr>
+                        <form method="post">
+                            <input type="hidden" name="gid" value="{{ group.gid }}">
+                            <td>
+                                <input class="form-control form-witdh-uuid" type="text" id="newSid" name="newSid" placeholder="订阅 UUID" value="{{ subscribe.sid }}">
+                                <input type="hidden" name="sid" value="{{ subscribe.sid }}">
+                            </td>
+                            <td>
+                                <input class="form-control form-witdh-short-string" type="text" id="name" name="name" placeholder="订阅名称" value="{{ subscribe.name }}">
+                            </td>
+                            <td>
+                                <input class="form-control form-witdh-long-string" type="text" id="original_url" name="original_url" placeholder="原始订阅网址"
+                                    value="{{ subscribe.original_url }}">
+                            </td>
+                            <td>
+                                <input class="form-control form-witdh-long-string" type="text" id="convert_url" name="convert_url" placeholder="转换订阅网址"
+                                    value="{{ subscribe.convert_url }}">
+                            </td>
+                            <td>
+                                <input class="form-control form-witdh-short-string" type="text" id="target" name="target" placeholder="转换目标"
+                                    value="{{ subscribe.target }}">
+                            </td>
+                            <td>
+                                <input class="form-control form-witdh-medium-string" type="text" id="options" name="options" placeholder="转换选项"
+                                    value="{{ subscribe.options }}">
+                            </td>
+                            <td>
+                                <button class="btn btn-danger" type="submit" name="type" value="deleteCurrentSub">删除</button>
+                                <button class="btn btn-primary" type="submit" name="type" value="updateCurrentSub">保存</button>
+                            </td>
+                        </form>
+                    </tr>
+                    {% endfor %}
+                    <tr>
+                        <form method="post">
+                            <input type="hidden" name="gid" value="{{ group.gid }}">
+                            <td>
+                                <input class="form-control form-witdh-uuid" type="text" id="sid" name="sid" placeholder="订阅 UUID（留空则自动生成）">
+                            </td>
+                            <td>
+                                <input class="form-control form-witdh-short-string" type="text" id="name" name="name" placeholder="订阅名称">
+                            </td>
+                            <td>
+                                <input class="form-control form-witdh-long-string" type="text" id="original_url" name="original_url" placeholder="原始订阅网址">
+                            </td>
+                            <td>
+                                <input class="form-control form-witdh-long-string" type="text" id="convert_url" name="convert_url" placeholder="转换订阅网址">
+                            </td>
+                            <td>
+                                <input class="form-control form-witdh-short-string" type="text" id="target" name="target" placeholder="转换目标" value="clash">
+                            </td>
+                            <td>
+                                <input class="form-control form-witdh-medium-string" type="text" id="options" name="options" placeholder="转换选项"
+                                    value="emoji=true&udp=true&new_name=true">
+                            </td>
+                            <td>
+                                <button class="btn btn-primary" type="submit" name="type" value="createNewSub">保存</button>
+                            </td>
+                        </form>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <h4>分组共享账号</h4>
+        <div class="table-responsive text-nowrap">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col">账号名称</th>
+                        <th scope="col">账号</th>
+                        <th scope="col">密码</th>
+                        <th scope="col">管理账号网址</th>
+                        <th scope="col">操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for share in groupShare %}
+                    <tr>
+                        <form method="post">
+                            <input type="hidden" name="gsid" value="{{ share.gsid }}">
+                            <input type="hidden" name="gid" value="{{ group.gid }}">
+                            <td>
+                                <input class="form-control form-witdh-short-string" type="text" id="name" name="name" placeholder="账号名称" value="{{ share.name }}">
+                            </td>
+                            <td>
+                                <input class="form-control form-witdh-medium-string" type="text" id="account" name="account" placeholder="账号" value="{{ share.account }}">
+                            </td>
+                            <td>
+                                <input class="form-control form-witdh-medium-string" type="text" id="password" name="password" placeholder="密码"
+                                    value="{{ share.password }}">
+                            </td>
+                            <td>
+                                <input class="form-control form-witdh-medium-string" type="text" id="manage" name="manage" placeholder="管理账号网址"
+                                    value="{{ share.manage }}">
+                            </td>
+                            <td>
+                                <button class="btn btn-danger" type="submit" name="type" value="deleteCurrentAccount">删除</button>
+                                <button class="btn btn-primary" type="submit" name="type" value="updateCurrentAccount">保存</button>
+                            </td>
+                        </form>
+                    </tr>
+                    {% endfor %}
+                    <tr>
+                        <form method="post">
+                            <input type="hidden" name="gid" value="{{ group.gid }}">
+                            <td>
+                                <input class="form-control form-witdh-short-string" type="text" id="name" name="name" placeholder="账号名称">
+                            </td>
+                            <td>
+                                <input class="form-control form-witdh-medium-string" type="text" id="account" name="account" placeholder="账号">
+                            </td>
+                            <td>
+                                <input class="form-control form-witdh-medium-string" type="text" id="password" name="password" placeholder="密码">
+                            </td>
+                            <td>
+                                <input class="form-control form-witdh-medium-string" type="text" id="manage" name="manage" placeholder="管理账号网址">
+                            </td>
+                            <td>
+                                <button class="btn btn-primary" type="submit" name="type" value="createNewAccount">添加</button>
+                            </td>
+                        </form>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,103 @@
+{% extends "administrator.twig" %}
+
+{% block title %}用户管理 - 后台管理{% endblock %}
+{% block adminContent %}
+<div class="container mb-4">
+    <div class="d-flex justify-content-end justify-content-md-between">
+        <h2 class="d-none d-md-block">用户管理</h2>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createUserModal">创建新用户</button>
+    </div>
+
+    <div class="modal fade" id="createUserModal" tabindex="-1" aria-labelledby="createUserModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="createUserModalLabel">创建新用户</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form method="post" action="{{ baseUrl }}/admin?type=users">
+                    <div class="modal-body">
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="uid" name="uid" placeholder="用户 UUID">
+                            <label for="uid">用户 UUID</label>
+                            <div class="form-text">留空则自动创建。</div>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="username" name="username" placeholder="用户名">
+                            <label for="username">用户名</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="password" class="form-control" id="password" name="password" placeholder="new_password" autocomplete="new-password">
+                            <label for="password">密码</label>
+                            <div class="form-text">需要大写、小写字母和数字。长度不少于8个字符。</div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" type="submit" name="type" value="createNewUser">保存</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-responsive text-nowrap">
+        <table class="table table-hover">
+            <colgroup>
+                <col style="width: 90%;">
+                <col style="width: 10%;">
+            </colgroup>
+            <thead>
+                <tr>
+                    <th scope="col">用户名</th>
+                    <th scope="col">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>{{ user.username }}</td>
+                    <td>
+                        <a class="btn btn-sm btn-primary" href="{{ baseUrl }}/admin/user?uid={{ user.uid }}">编辑</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+
+    <div class="d-flex justify-content-end">
+        <nav aria-label="Page navigation">
+            <ul class="pagination">
+                <li class="page-item {% if currentPage <= 1 %}disabled{% endif %}">
+                    <a class="page-link" href="?type={{ type }}&page=1" aria-label="First">
+                        <span aria-hidden="true">&lt;&lt;</span>
+                    </a>
+                </li>
+                <li class="page-item {% if currentPage <= 1 %}disabled{% endif %}">
+                    <a class="page-link" href="?type={{ type }}&page={{ currentPage - 1 }}" aria-label="Previous">
+                        <span aria-hidden="true">&lt;</span>
+                    </a>
+                </li>
+
+                {% for page in 1..totalPages %}
+                <li class="page-item {% if page == currentPage %}active{% endif %}">
+                    <a class="page-link" href="?type={{ type }}&page={{ page }}">{{ page }}</a>
+                </li>
+                {% endfor %}
+
+                <li class="page-item {% if currentPage >= totalPages %}disabled{% endif %}">
+                    <a class="page-link" href="?type={{ type }}&page={{ currentPage + 1 }}" aria-label="Next">
+                        <span aria-hidden="true">&gt;</span>
+                    </a>
+                </li>
+                <li class="page-item {% if currentPage >= totalPages %}disabled{% endif %}">
+                    <a class="page-link" href="?type={{ type }}&page={{ totalPages }}" aria-label="Last">
+                        <span aria-hidden="true">&gt;&gt;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+{% endblock %}

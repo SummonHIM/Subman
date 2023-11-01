@@ -3,9 +3,6 @@
 namespace Subman;
 
 use Subman\Config;
-use Subman\Clients;
-use Subman\Subscribes;
-use Subman\Authentication;
 
 class Router
 {
@@ -25,6 +22,15 @@ class Router
                 case $baseUrl . '/userconfig':
                     UserConfig::onPost();
                     break;
+                case $baseUrl . '/admin':
+                    Administrator::onPost();
+                    break;
+                case $baseUrl . '/admin/user':
+                    AdminUser::onUserPost();
+                    break;
+                case $baseUrl . '/admin/group':
+                    AdminGroup::onGroupPost();
+                    break;
                 case $baseUrl . '/api/logout':
                     Authentication::onPostLogout();
                     break;
@@ -42,7 +48,13 @@ class Router
                     Authentication::onRenderLogin();
                     break;
                 case $baseUrl . '/admin':
-                    Administrator::renderAdministrator();
+                    Administrator::renderMain();
+                    break;
+                case $baseUrl . '/admin/user':
+                    Administrator::renderUser();
+                    break;
+                case $baseUrl . '/admin/group':
+                    Administrator::renderGroup();
                     break;
                 case $baseUrl . '/userconfig':
                     UserConfig::renderUserConfig();
@@ -50,14 +62,12 @@ class Router
                 case $baseUrl . '/clients':
                     Clients::renderClients();
                     break;
-                    // Begin API route
                 case $baseUrl . '/api/subscribe':
                     Subscribes::getSubscribesUrl();
                     break;
                 case $baseUrl . '/api.php':
                     Subscribes::getSubscribesUrl();
                     break;
-                    // End API route
                 default:
                     header("Location: " . $baseUrl . "/");
                     break;
