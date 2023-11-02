@@ -74,6 +74,8 @@ class Subscribes
         header('Content-Type: text/plain');
         // 若 sub 和 user 不存在则打印错误并返回
         if (!isset($_GET['sub']) || !isset($_GET['user'])) {
+            header('Content-Type: application/json');
+            http_response_code(401);
             echo json_encode(array(
                 'Status' => 'Error',
                 'Message' => 'Please provide the parameters sub and user.',
@@ -85,8 +87,27 @@ class Subscribes
         $cfg = new Config;
 
         $subscribes = $db->getRowbyName("group_subscribes", "gid, name, original_url, convert_url, target, options", array('sid' => $_GET['sub']));
+        if (empty($subscribes)) {
+            header('Content-Type: application/json');
+            http_response_code(401);
+            echo json_encode(array(
+                'Status' => 'Error',
+                'Message' => 'This subscribe ID does not contain any subscribe information.',
+            ));
+            return;
+        }
+
         $groups = $db->getRowbyName("groups", "name", array("gid" => $subscribes['gid']));
         $expire = $db->getRowbyName("user_subscribes", "expire", array('gid' => $subscribes['gid'], 'uid' => $_GET['user']))['expire'];
+        if (empty($subscribes)) {
+            header('Content-Type: application/json');
+            http_response_code(401);
+            echo json_encode(array(
+                'Status' => 'Error',
+                'Message' => 'The user does not have access to this subscription.',
+            ));
+            return;
+        }
 
         // 检查订阅是否已经过期
         if (date('Y-m-d H:i:s') < $expire) {
