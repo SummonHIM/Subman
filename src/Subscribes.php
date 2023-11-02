@@ -98,7 +98,7 @@ class Subscribes
 
         $groups = $db->getRowbyName("groups", "name", array("gid" => $subscribes['gid']));
         $expire = $db->getRowbyName("user_subscribes", "expire", array('gid' => $subscribes['gid'], 'uid' => $_GET['user']))['expire'];
-        if (empty($subscribes)) {
+        if (empty($expire)) {
             header('Content-Type: application/json');
             http_response_code(401);
             echo json_encode(array(
