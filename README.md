@@ -1,5 +1,5 @@
 # Subman
-Subscribe Manager/订阅管理器
+Subscribe Manager
 
 ## 如何使用
 1. 向数据库导入位于 `resources/sql/subs.sql` 的脚本。

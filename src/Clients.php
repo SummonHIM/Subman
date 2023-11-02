@@ -20,10 +20,13 @@ class Clients
             $loader = new \Twig\Loader\FilesystemLoader("templates");
             $twig = new \Twig\Environment($loader);
 
+            $imageCDN = empty($cfg->getValue('WebSite', 'ClientImgCDN')) ? $cfg->getValue('WebSite', 'BaseUrl') : $cfg->getValue('WebSite', 'ClientImgCDN');
+
             $template = $twig->load("clients.twig");
             echo $template->render(array(
                 'isAdmin' => $db->getRowbyName("users", 'isadmin', array("uid" => $_SESSION['uid']))['isadmin'],
                 'baseUrl' => $cfg->getValue('WebSite', 'BaseUrl'),
+                'imageCDN' => $imageCDN,
                 'username' => $_SESSION['username'],
                 'pageClient' => true
             ));
