@@ -12,62 +12,6 @@
 <div class="container mt-5 mb-4">
     <h2>客户端介绍</h2>
     <div class="accordion" id="accordionClients">
-
-        <div class="accordion-item">
-            <h2 class="accordion-header">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseClash4Windows" aria-expanded="false"
-                    aria-controls="collapseClash4Windows">
-                    Clash for Windows
-                    (<ion-icon name="logo-windows"></ion-icon>/<ion-icon name="logo-tux"></ion-icon>/<ion-icon name="logo-apple"></ion-icon>)
-                </button>
-            </h2>
-            <div id="collapseClash4Windows" class="accordion-collapse collapse" data-bs-parent="#accordionClients">
-                <div class="accordion-body">
-                    <div class="alert alert-primary">
-                        适用平台：<ion-icon name="logo-windows"></ion-icon>/<ion-icon name="logo-tux"></ion-icon>/<ion-icon name="logo-apple"></ion-icon>
-                    </div>
-                    <div class="d-flex flex-column flex-sm-row justify-content-evenly mb-4">
-                        <a class="btn btn-outline-primary" href="https://github.com/Fndroid/clash_for_windows_pkg/releases/latest" target="_blank">
-                            <ion-icon name="download"></ion-icon>
-                            下载最新版程序本体
-                        </a>
-                        <a class="btn btn-outline-primary" href="https://github.com/BoyceLig/Clash_Chinese_Patch/releases/latest" target="_blank">
-                            <ion-icon name="download"></ion-icon>
-                            下载最新版汉化补丁
-                        </a>
-                        <a class="btn btn-outline-primary" href="https://docs.cfw.lbyczf.com/" target="_blank">
-                            <ion-icon name="document-text"></ion-icon>
-                            官方文档
-                        </a>
-                    </div>
-                    <h5>汉化方法</h5>
-                    <p class="indented">
-                        1. 下载并安装好本体，然后下载汉化补丁。<br>
-                        2. 打开汉化补丁压缩包，压缩包内含名为 <code>app.asar</code> 的文件。将其解压出来。<br>
-                        3. 右键 Clash for Windows 的快捷方式并打开文件所在的位置。进入 <code>resources</code> 文件夹。<br>
-                        4. 将 <code>resources</code> 文件夹中的 <code>app.asar</code> 替换为汉化补丁中的 <code>app.asar</code>。
-                    </p>
-                    <hr>
-                    <h5>使用方法</h5>
-                    <p class="indented">
-                        1. 打开本网站，选择合适的订阅并点击
-                        <button type="button" class="btn btn-outline-primary" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="bottom"
-                            data-bs-content="你在这里点是没有用的捏~">导入到 Clash</button>
-                        按钮。此时 Clash for Windows 会自动下载订阅信息至配置中。<br>
-                        2. 打开 Clash for Windows 并进入配置选项卡。选择刚刚导入进去的订阅。<br>
-                        <img class="img-fluid" src="{{ imageCDN }}/resources/images/Clash4Windows-Profiles.png" /><br>
-                        3. 进入常规选项卡，开启系统代理即可使用。<br>
-                        <img class="img-fluid" src="{{ imageCDN }}/resources/images/Clash4Windows-General.png" />
-                    </p>
-                    <hr>
-                    <h5>Tun 模式使用方法</h5>
-                    <p class="indented">
-                        Tun 模式通过创建虚拟网卡来实现网络代理。理论上比系统代理更好。你可通过阅读<a href="https://docs.cfw.lbyczf.com/contents/tun.html" target="_blank">这篇文章</a>来了解如何使用 Tun 模式。
-                    </p>
-                </div>
-            </div>
-        </div>
-
         <div class="accordion-item">
             <h2 class="accordion-header">
                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseClashVerge" aria-expanded="false"
@@ -116,6 +60,64 @@
 
         <div class="accordion-item">
             <h2 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseClash4Windows" aria-expanded="false"
+                    aria-controls="collapseClash4Windows">
+                    Clash for Windows
+                    (<ion-icon name="logo-windows"></ion-icon>/<ion-icon name="logo-tux"></ion-icon>/<ion-icon name="logo-apple"></ion-icon>)
+                </button>
+            </h2>
+            <div id="collapseClash4Windows" class="accordion-collapse collapse" data-bs-parent="#accordionClients">
+                <div class="accordion-body">
+                    <div class="alert alert-danger">
+                        <b>警告</b>：Clash for Windows 作者已宣布停止更新。可能会存在软件后门漏洞导致个人计算机被攻击。请谨慎考虑后使用。
+                    </div>
+                    <div class="alert alert-primary">
+                        适用平台：<ion-icon name="logo-windows"></ion-icon>/<ion-icon name="logo-tux"></ion-icon>/<ion-icon name="logo-apple"></ion-icon>
+                    </div>
+                    <div class="d-flex flex-column flex-sm-row justify-content-evenly mb-4">
+                        <a class="btn btn-outline-primary" href="https://github.com/Fndroid/clash_for_windows_pkg/releases/latest" target="_blank">
+                            <ion-icon name="download"></ion-icon>
+                            下载最新版程序本体
+                        </a>
+                        <a class="btn btn-outline-primary" href="https://github.com/BoyceLig/Clash_Chinese_Patch/releases/latest" target="_blank">
+                            <ion-icon name="download"></ion-icon>
+                            下载最新版汉化补丁
+                        </a>
+                        <a class="btn btn-outline-primary" href="https://docs.cfw.lbyczf.com/" target="_blank">
+                            <ion-icon name="document-text"></ion-icon>
+                            官方文档
+                        </a>
+                    </div>
+                    <h5>汉化方法</h5>
+                    <p class="indented">
+                        1. 下载并安装好本体，然后下载汉化补丁。<br>
+                        2. 打开汉化补丁压缩包，压缩包内含名为 <code>app.asar</code> 的文件。将其解压出来。<br>
+                        3. 右键 Clash for Windows 的快捷方式并打开文件所在的位置。进入 <code>resources</code> 文件夹。<br>
+                        4. 将 <code>resources</code> 文件夹中的 <code>app.asar</code> 替换为汉化补丁中的 <code>app.asar</code>。
+                    </p>
+                    <hr>
+                    <h5>使用方法</h5>
+                    <p class="indented">
+                        1. 打开本网站，选择合适的订阅并点击
+                        <button type="button" class="btn btn-outline-primary" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="bottom"
+                            data-bs-content="你在这里点是没有用的捏~">导入到 Clash</button>
+                        按钮。此时 Clash for Windows 会自动下载订阅信息至配置中。<br>
+                        2. 打开 Clash for Windows 并进入配置选项卡。选择刚刚导入进去的订阅。<br>
+                        <img class="img-fluid" src="{{ imageCDN }}/resources/images/Clash4Windows-Profiles.png" /><br>
+                        3. 进入常规选项卡，开启系统代理即可使用。<br>
+                        <img class="img-fluid" src="{{ imageCDN }}/resources/images/Clash4Windows-General.png" />
+                    </p>
+                    <hr>
+                    <h5>Tun 模式使用方法</h5>
+                    <p class="indented">
+                        Tun 模式通过创建虚拟网卡来实现网络代理。理论上比系统代理更好。你可通过阅读<a href="https://docs.cfw.lbyczf.com/contents/tun.html" target="_blank">这篇文章</a>来了解如何使用 Tun 模式。
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="accordion-item">
+            <h2 class="accordion-header">
                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseClash4Android" aria-expanded="false"
                     aria-controls="collapseClash4Android">
                     Clash for Android
@@ -124,6 +126,9 @@
             </h2>
             <div id="collapseClash4Android" class="accordion-collapse collapse" data-bs-parent="#accordionClients">
                 <div class="accordion-body">
+                    <div class="alert alert-warning">
+                        <b>注意</b>：这个软件很久没有更新了。
+                    </div>
                     <div class="alert alert-primary">
                         适用平台：<ion-icon name="logo-android"></ion-icon>
                     </div>
