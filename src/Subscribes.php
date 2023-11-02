@@ -71,7 +71,6 @@ class Subscribes
      */
     public static function getSubscribesUrl()
     {
-        header('Content-Type: text/plain');
         // 若 sub 和 user 不存在则打印错误并返回
         if (!isset($_GET['sub']) || !isset($_GET['user'])) {
             header('Content-Type: application/json');
@@ -108,6 +107,8 @@ class Subscribes
             ));
             return;
         }
+
+        header('Content-Type: text/plain');
 
         // 检查订阅是否已经过期
         if (date('Y-m-d H:i:s') < $expire) {
