@@ -14,7 +14,7 @@
             {% if sub.converter == 1 %}
             {% set subUrl = subUrl ~ '&config=' ~ customConfig | url_encode %}
             {% endif %}
-            {% set suggestionName = item.name ~ ' 的 ' ~ sub.name %}
+            {% set suggestionName = item.name ~ sub.name %}
 
             {% if not loop.first %}
             <hr class="mt-4 mb-4">

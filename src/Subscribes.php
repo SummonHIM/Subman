@@ -115,7 +115,7 @@ class Subscribes
             // 没有过期则跳转正确的 url
             if ($subscribes['converter'] == 1) {
                 // 如果使用改版订阅，则生成 subconverter 链接
-                $url = $cfg->getValue('WebSite', 'SubConverterUrl') . "target=" . $subscribes["target"] . "&url=" . urlencode($subscribes['url']) . "&filename=" . urlencode($groups['name'] . ' 的 ' . $subscribes['name']) . "&" . $subscribes['options'];
+                $url = $cfg->getValue('WebSite', 'SubConverterUrl') . "target=" . $subscribes["target"] . "&url=" . urlencode($subscribes['url']) . "&filename=" . urlencode($groups['name'] . $subscribes['name']) . "&" . $subscribes['options'];
                 // 如果定义了 config 参数，则将 config 参数也合并进 url 中
                 if (!empty($_GET['config']))
                     $url .= "&config=" . urlencode($_GET["config"]);
