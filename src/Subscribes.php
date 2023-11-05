@@ -32,7 +32,7 @@ class Subscribes
                 if (date('Y-m-d H:i:s') < $i['expire']) {
                     // 若订阅仍未过期，则将过期时间，订阅地址以及共享账号添加至 group 数组内
                     $groups["expire"] = $i['expire'];
-                    $groups["subscribes"] = $db->getRowbyName("group_subscribes", 'sid, gid, name, converter, target', array("gid" => $i['gid']), true);
+                    $groups["subscribes"] = $db->getRowbyNameOrder("group_subscribes", 'sid, gid, name, converter, target', array("gid" => $i['gid']), array("orderlist" => "ASC"), true);
                     $groups["share"] = $db->getRowbyName("group_share", 'name, account, password, manage', array("gid" => $i['gid']), true);
                 } else {
                     // 若订阅过期了，则删除部分键值，只保留部分关键信息。

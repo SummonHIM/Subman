@@ -57,12 +57,62 @@ class Database
         // 建立并循环并合并数组
         $conditions = [];
         foreach ($searchArray as $column => &$value) {
-            $conditions[] = "$column = :$column";
+            $conditions[] = "`$column` = :$column";
         }
         $fullSearchCommand = implode(' AND ', $conditions);
 
         try {
             $stmt = $this->dbh->prepare("SELECT $select FROM $table WHERE $fullSearchCommand");
+
+            foreach ($searchArray as $column => &$value) {
+                $stmt->bindParam(":$column", $value, \PDO::PARAM_STR);
+            }
+
+            $stmt->execute();
+
+            if ($fetchAll) {
+                $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            } else {
+                $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+                if ($result === false)
+                    $result = [];
+            }
+
+            return $result;
+        } catch (\PDOException $e) {
+            if ($this->cfg->getValue('WebSite', 'Debug')) {
+                throw new \Exception($e->getMessage());
+            } else {
+                throw new \Exception("服务器内部错误！");
+            }
+        }
+    }
+
+    /**
+     * 根据某列值获取整行
+     * @param string $table 数据库表名
+     * @param array $searchArray 欲搜索的键值，其中键名称作为列名，键值作为列值
+     * @param array $order 欲排序的键值，其中键名称作为排序名，键值指定正向反向
+     * @param bool $fetchAll 若启用，则使用fetchAll返回多结果数组，否则仅返回首结果
+     * @return 返回整行数据
+     */
+    public function getRowbyNameOrder(string $table, string $select, array $searchArray, array $orderArray, ?bool $fetchAll = false): array
+    {
+        // 建立并循环并合并数组
+        $searchCommands = [];
+        foreach ($searchArray as $column => &$value) {
+            $searchCommands[] = "`$column` = :$column";
+        }
+        $fullSearchCommand = implode(' AND ', $searchCommands);
+
+        $orderCommands = [];
+        foreach ($orderArray as $column => &$value) {
+            $orderCommands[] = "`$column` $value";
+        }
+        $fullOrderCommands = implode(', ', $orderCommands);
+
+        try {
+            $stmt = $this->dbh->prepare("SELECT $select FROM $table WHERE $fullSearchCommand ORDER BY $fullOrderCommands");
 
             foreach ($searchArray as $column => &$value) {
                 $stmt->bindParam(":$column", $value, \PDO::PARAM_STR);
@@ -95,7 +145,10 @@ class Database
      */
     public function insertNewRow(string $table, array $insertArray): void
     {
-        $queryRow = implode(', ', array_keys($insertArray));
+        $wrappedKeys = array_combine(array_map(function($key) {
+            return "`$key`";
+        }, array_keys($insertArray)), $insertArray);
+        $queryRow = implode(', ', array_keys($wrappedKeys));
 
         foreach ($insertArray as $key => &$value) {
             $queryColArray[] = ':' . $key;
@@ -129,13 +182,13 @@ class Database
     {
         $updateConditions = [];
         foreach ($updateArray as $column => &$value) {
-            $updateConditions[] = "$column = :update_$column";
+            $updateConditions[] = "`$column` = :update_$column";
         }
         $fullupdateCommand = implode(', ', $updateConditions);
 
         $searchConditions = [];
         foreach ($searchArray as $column => &$value) {
-            $searchConditions[] = "$column = :search_$column";
+            $searchConditions[] = "`$column` = :search_$column";
         }
         $fullSearchCommand = implode(' AND ', $searchConditions);
 

@@ -212,7 +212,7 @@ class AdminUser extends Administrator
                     'gid' => $_POST['gid']
                 )
             );
-            $this->renderUser("Success");
+            $this->renderUser("分组已删除。");
         } catch (\PDOException $e) {
             if ($this->cfg->getValue('WebSite', 'Debug')) {
                 $this->renderUser($e->getMessage());

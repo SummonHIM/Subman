@@ -150,7 +150,7 @@ class AdminGroup extends Administrator
      */
     private function handleUpdateCurrentSub(): void
     {
-        if (empty($_POST['sid']) || empty($_POST['gid']) || empty($_POST['name']) || empty($_POST['url'])) {
+        if (empty($_POST['sid']) || empty($_POST['gid']) || empty($_POST['name']) || empty($_POST['url']) || empty($_POST['orderlist'])) {
             $this->renderGroup("除订阅 UUID、转换目标和转换选项外，其他内容不得为空。");
             http_response_code(405);
             return;
@@ -189,6 +189,12 @@ class AdminGroup extends Administrator
             return;
         }
 
+        if ($_POST['orderlist'] > 255) {
+            $this->renderGroup("排序不能超过 255。");
+            http_response_code(405);
+            return;
+        }
+
         $converter = isset($_POST['converter']) ? 1 : 0;
 
         try {
@@ -196,6 +202,7 @@ class AdminGroup extends Administrator
                 "group_subscribes",
                 array(
                     'sid' => $newSid,
+                    'orderlist' => $_POST['orderlist'],
                     'name' => $_POST['name'],
                     'url' => $_POST['url'],
                     'converter' => $converter,
@@ -242,7 +249,7 @@ class AdminGroup extends Administrator
                     'gid' => $_POST['gid']
                 )
             );
-            $this->renderGroup("Success");
+            $this->renderGroup("订阅已删除。");
         } catch (\PDOException $e) {
             if ($this->cfg->getValue('WebSite', 'Debug')) {
                 $this->renderGroup($e->getMessage());
@@ -278,6 +285,7 @@ class AdminGroup extends Administrator
 
         $target = empty($_POST['target']) ? 'clash' : $_POST['target'];
         $options = empty($_POST['options']) ? 'emoji=true&udp=true&new_name=true' : $_POST['options'];
+        $orderlist = empty($_POST['orderlist']) ? 0 : $_POST['orderlist'];
 
         if (strlen($_POST['url']) > 255 || strlen($_POST['options']) > 255) {
             $this->renderGroup("原始订阅网址、转换订阅网址或转换选项的长度超过 255，或不符合储存规范。");
@@ -297,6 +305,12 @@ class AdminGroup extends Administrator
             return;
         }
 
+        if ($_POST['orderlist'] > 255) {
+            $this->renderGroup("排序不能超过 255。");
+            http_response_code(405);
+            return;
+        }
+
         $converter = isset($_POST['converter']) ? 1 : 0;
 
         try {
@@ -305,6 +319,7 @@ class AdminGroup extends Administrator
                 array(
                     'sid' => $sid,
                     'gid' => $_POST['gid'],
+                    'orderlist' => $orderlist,
                     'name' => $_POST['name'],
                     'url' => $_POST['url'],
                     'converter' => $converter,
@@ -400,7 +415,7 @@ class AdminGroup extends Administrator
                     'gid' => $_POST['gid']
                 )
             );
-            $this->renderGroup("Success");
+            $this->renderGroup("共享账号已删除。");
         } catch (\PDOException $e) {
             if ($this->cfg->getValue('WebSite', 'Debug')) {
                 $this->renderGroup($e->getMessage());

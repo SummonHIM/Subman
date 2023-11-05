@@ -156,7 +156,7 @@ class Administrator
             header("Location: " . $self->cfg->getValue('WebSite', 'BaseUrl') . "/admin");
             return;
         }
-        $subscribes = $self->db->getRowbyName("group_subscribes", '*', array("gid" => $_GET['gid']), true);
+        $subscribes = $self->db->getRowbyNameOrder("group_subscribes", '*', array("gid" => $_GET['gid']), array("orderlist" => "ASC"), true);
         $groupShare = $self->db->getRowbyName("group_share", '*', array("gid" => $_GET['gid']), true);
 
         $template = $self->twig->load("administrator/group.twig");

@@ -7,6 +7,10 @@
         min-width: 355px;
     }
 
+    .form-witdh-tinyint {
+        min-width: 75px;
+    }
+
     .form-witdh-short-string {
         min-width: 150px;
     }
@@ -59,8 +63,8 @@
                 <label for="sub_aff">机场邀请码</label>
             </div>
             <div class="float-end">
-                <button class="btn btn-danger" type="submit" name="type" value="deleteGroup">删除此分组</button>
                 <button class="btn btn-primary" type="submit" name="type" value="updateGroupConfig">保存</button>
+                <button class="btn btn-danger" type="submit" name="type" value="deleteGroup">删除此分组</button>
             </div>
         </form>
     </div>
@@ -74,6 +78,7 @@
                 <thead>
                     <tr>
                         <th scope="col">订阅 UUID</th>
+                        <th scope="col">排序</th>
                         <th scope="col">订阅名称</th>
                         <th scope="col">订阅网址</th>
                         <th scope="col">启用订阅转换</th>
@@ -96,6 +101,9 @@
                                 <input type="hidden" name="sid" value="{{ subscribe.sid }}">
                             </td>
                             <td>
+                                <input class="form-control form-witdh-tinyint" type="number" id="orderlist" name="orderlist" placeholder="排序" value="{{ subscribe.orderlist }}">
+                            </td>
+                            <td>
                                 <input class="form-control form-witdh-short-string" type="text" id="name" name="name" placeholder="订阅名称" value="{{ subscribe.name }}">
                             </td>
                             <td>
@@ -114,8 +122,8 @@
                                     value="{{ subscribe.options }}">
                             </td>
                             <td>
-                                <button class="btn btn-danger" type="submit" name="type" value="deleteCurrentSub">删除</button>
                                 <button class="btn btn-primary" type="submit" name="type" value="updateCurrentSub">保存</button>
+                                <button class="btn btn-danger" type="submit" name="type" value="deleteCurrentSub">删除</button>
                             </td>
                         </form>
                     </tr>
@@ -125,6 +133,9 @@
                             <input type="hidden" name="gid" value="{{ group.gid }}">
                             <td>
                                 <input class="form-control form-witdh-uuid" type="text" id="sid" name="sid" placeholder="订阅 UUID（留空则自动生成）">
+                            </td>
+                            <td>
+                                <input class="form-control form-witdh-tinyint" type="number" id="orderlist" name="orderlist" placeholder="排序">
                             </td>
                             <td>
                                 <input class="form-control form-witdh-short-string" type="text" id="name" name="name" placeholder="订阅名称">
@@ -144,7 +155,7 @@
                                     value="emoji=true&udp=true&new_name=true">
                             </td>
                             <td>
-                                <button class="btn btn-primary" type="submit" name="type" value="createNewSub">保存</button>
+                                <button class="btn btn-primary" type="submit" name="type" value="createNewSub">添加</button>
                             </td>
                         </form>
                     </tr>
@@ -190,8 +201,8 @@
                                     value="{{ share.manage }}">
                             </td>
                             <td>
-                                <button class="btn btn-danger" type="submit" name="type" value="deleteCurrentAccount">删除</button>
                                 <button class="btn btn-primary" type="submit" name="type" value="updateCurrentAccount">保存</button>
+                                <button class="btn btn-danger" type="submit" name="type" value="deleteCurrentAccount">删除</button>
                             </td>
                         </form>
                     </tr>

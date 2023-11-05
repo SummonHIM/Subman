@@ -59,8 +59,8 @@
             </div>
 
             <div class="float-end">
-                <button class="btn btn-danger" type="submit" name="type" value="deleteUser">删除此用户</button>
                 <button class="btn btn-primary" type="submit" name="type" value="updateUserConfig">保存</button>
+                <button class="btn btn-danger" type="submit" name="type" value="deleteUser">删除此用户</button>
             </div>
         </form>
     </div>
@@ -91,8 +91,8 @@
                                 <input class="form-control" type="datetime-local" id="expire" name="expire" value="{{ userSub.expire | date('Y-m-d\\TH:i:s') }}">
                             </td>
                             <td>
-                                <button class="btn btn-danger" type="submit" name="type" value="deleteCurrentSub">删除</button>
                                 <button class="btn btn-primary" type="submit" name="type" value="updateCurrentSub">保存</button>
+                                <button class="btn btn-danger" type="submit" name="type" value="deleteCurrentSub">删除</button>
                             </td>
                         </form>
                     </tr>
