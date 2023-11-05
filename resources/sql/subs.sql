@@ -40,13 +40,14 @@ CREATE TABLE IF NOT EXISTS `group_subscribes` (
   `sid` uuid NOT NULL DEFAULT uuid(),
   `gid` uuid NOT NULL DEFAULT uuid(),
   `name` varchar(25) NOT NULL,
-  `original_url` varchar(255) NOT NULL,
-  `convert_url` varchar(255) NOT NULL,
-  `target` char(15) NOT NULL DEFAULT 'clash',
-  `options` varchar(255) NOT NULL DEFAULT 'emoji=true&udp=true&new_name=true',
+  `url` varchar(255) NOT NULL,
+  `converter` tinyint(1) NOT NULL DEFAULT 0,
+  `target` char(15) DEFAULT 'clash',
+  `options` varchar(255) DEFAULT 'emoji=true&udp=true&new_name=true',
   PRIMARY KEY (`sid`) USING BTREE,
   KEY `gid` (`gid`) USING BTREE,
-  CONSTRAINT `group_subscribes_ibfk_1` FOREIGN KEY (`gid`) REFERENCES `groups` (`gid`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `group_subscribes_ibfk_1` FOREIGN KEY (`gid`) REFERENCES `groups` (`gid`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `conConverter` CHECK (`converter` in (0,1))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- 数据导出被取消选择。

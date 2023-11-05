@@ -17,7 +17,8 @@
             {% set suggestionName = item.name ~ ' 的 ' ~ sub.name %}
 
             {% if not loop.first %}
-            <hr>{% endif %}
+            <hr class="mt-4 mb-4">
+            {% endif %}
             <h5>{{ sub.name }}</h5>
             <div class="mb-3 row align-items-center">
                 <label class="form-label card-text">订阅链接</label>
@@ -46,7 +47,7 @@
                 <div class="form-text">该链接使用订阅转换器生成丰富的规则。你可为此链接使用 <code>config</code> 参数来自定义远程配置。前去用户配置即可手动自定义。</div>
                 {% endif %}
             </div>
-            <div class="mb-3">
+            <div>
                 <label class="form-label card-text">建议名称</label>
                 <input class="form-control" type="text" value="{{ suggestionName }}" readonly>
             </div>
