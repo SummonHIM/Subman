@@ -12,14 +12,12 @@ Subscribe Manager
 ```
 location / {
     try_files $uri $uri/ /index.php?$query_string;
-    include nginxconfig.io/general-assets.conf;
 }
 ```
 ### 有子路径
 ```
 location /subs/ {
     try_files $uri $uri/ /subs/index.php?$query_string;
-    include nginxconfig.io/general-assets.conf;
 }
 ```
 

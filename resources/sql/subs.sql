@@ -39,6 +39,7 @@ CREATE TABLE IF NOT EXISTS `group_share` (
 CREATE TABLE IF NOT EXISTS `group_subscribes` (
   `sid` uuid NOT NULL DEFAULT uuid(),
   `gid` uuid NOT NULL DEFAULT uuid(),
+  `orderlist` tinyint(4) unsigned NOT NULL DEFAULT 0,
   `name` varchar(25) NOT NULL,
   `url` varchar(255) NOT NULL,
   `converter` tinyint(1) NOT NULL DEFAULT 0,
