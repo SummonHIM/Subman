@@ -8,12 +8,11 @@
     </h2>
     <div id="collapseSubscriptions-{{ loop.index }}" class="accordion-collapse collapse show">
         <div class="accordion-body">
-            <div class="alert alert-primary" role="alert">该链接将自动重定向至现有订阅。你可以不用经常更换订阅链接。若链接失效则尽快联系我。</div>
+            <div class="alert alert-primary" role="alert">该链接将自动重定向至现有订阅。你可以不用经常更换订阅链接。若链接失效则尽快联系管理员。</div>
             {% for sub in item.subscribes %}
-            {% set originalUrl = subApiUrl ~ '?sub=' ~ sub.sid ~ '&user=' ~ uid %}
-            {% set convertUrl = subApiUrl ~ '?sub=' ~ sub.sid ~ '&user=' ~ uid ~ '&convert=true' %}
-            {% if customConfig is not empty %}
-                {% set convertUrl = convertUrl ~ '&config=' ~ customConfig | url_encode %}
+            {% set subUrl = subApiUrl ~ '?sub=' ~ sub.sid ~ '&user=' ~ uid %}
+            {% if sub.converter == 1 %}
+            {% set subUrl = subUrl ~ '&config=' ~ customConfig | url_encode %}
             {% endif %}
             {% set suggestionName = item.name ~ ' 的 ' ~ sub.name %}
 
@@ -21,27 +20,31 @@
             <hr>{% endif %}
             <h5>{{ sub.name }}</h5>
             <div class="mb-3 row align-items-center">
-                <label class="form-label card-text">原版订阅</label>
-                <div class="col-lg-10">
-                    <input class="form-control" type="text" value="{{ originalUrl }}" readonly>
+                <label class="form-label card-text">订阅链接</label>
+                <div class="col-lg">
+                    <input class="form-control" type="text" value="{{ subUrl }}" readonly>
                 </div>
-                <div class="btn-group col-lg-2" role="group">
-                    <a class="btn btn-outline-primary"
-                        href="clash://install-config?url={{ originalUrl | url_encode }}&name={{ suggestionName | url_encode }}"
-                        target="_blank">导入到Clash</a>
+
+                {% if sub.target == "clash" %}
+                <div class="btn-group col-lg-3 col-xxl-2" role="group">
+                    <a class="btn btn-outline-primary" href="clash://install-config?url={{ subUrl | url_encode }}&name={{ suggestionName | url_encode }}"
+                        target="_blank">导入到 Clash</a>
                 </div>
-            </div>
-            <div class="mb-3 row align-items-center">
-                <label class="form-label card-text">改版订阅（荐）</label>
-                <div class="col-lg-10">
-                    <input class="form-control" type="text" value="{{ convertUrl }}" readonly>
+                {% endif %}
+                {% if sub.target == "surfboard" %}
+                <div class="btn-group col-lg-4 col-xxl-3" role="group">
+                    <a class="btn btn-outline-primary" href="surfboard:///install-config?url={{ subUrl | url_encode }}" target="_blank">导入到 Surfboard</a>
                 </div>
-                <div class="btn-group col-lg-2" role="group">
-                    <a class="btn btn-outline-primary"
-                        href="clash://install-config?url={{ convertUrl | url_encode }}&name={{ suggestionName | url_encode }}"
-                        target="_blank">导入到Clash</a>
+                {% endif %}
+                {% if sub.target matches '/surge/' %}
+                <div class="btn-group col-lg-3 col-xxl-2" role="group">
+                    <a class="btn btn-outline-primary" href="surge:///install-config?url={{ subUrl | url_encode }}" target="_blank">导入到 Surge</a>
                 </div>
-                <div class="form-text">你可为此链接使用<code>config</code>参数来自定义远程配置。前去用户配置即可手动自定义。</div>
+                {% endif %}
+
+                {% if sub.converter == 1 %}
+                <div class="form-text">该链接使用订阅转换器生成丰富的规则。你可为此链接使用 <code>config</code> 参数来自定义远程配置。前去用户配置即可手动自定义。</div>
+                {% endif %}
             </div>
             <div class="mb-3">
                 <label class="form-label card-text">建议名称</label>

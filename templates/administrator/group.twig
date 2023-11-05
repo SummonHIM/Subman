@@ -34,6 +34,7 @@
             <div class="form-floating mb-3">
                 <input type="text" class="form-control" id="newGid" name="newGid" placeholder="分组 UUID" value="{{ group.gid }}">
                 <label for="newGid">分组 UUID</label>
+                <div class="form-text">留空则随机生成。</div>
             </div>
             <div class="form-floating mb-3">
                 <input type="text" class="form-control" id="name" name="name" placeholder="分组名称" value="{{ group.name }}">
@@ -74,8 +75,8 @@
                     <tr>
                         <th scope="col">订阅 UUID</th>
                         <th scope="col">订阅名称</th>
-                        <th scope="col">原始订阅网址</th>
-                        <th scope="col">转换订阅网址</th>
+                        <th scope="col">订阅网址</th>
+                        <th scope="col">启用订阅转换</th>
                         <th scope="col"><a class="text-decoration-none"
                                 href="https://github.com/tindy2013/subconverter/blob/master/README-cn.md#%E6%94%AF%E6%8C%81%E7%B1%BB%E5%9E%8B" target="_blank">转换目标</a>
                         </th>
@@ -91,19 +92,18 @@
                         <form method="post">
                             <input type="hidden" name="gid" value="{{ group.gid }}">
                             <td>
-                                <input class="form-control form-witdh-uuid" type="text" id="newSid" name="newSid" placeholder="订阅 UUID" value="{{ subscribe.sid }}">
+                                <input class="form-control form-witdh-uuid" type="text" id="newSid" name="newSid" placeholder="订阅 UUID（留空则自动生成）" value="{{ subscribe.sid }}">
                                 <input type="hidden" name="sid" value="{{ subscribe.sid }}">
                             </td>
                             <td>
                                 <input class="form-control form-witdh-short-string" type="text" id="name" name="name" placeholder="订阅名称" value="{{ subscribe.name }}">
                             </td>
                             <td>
-                                <input class="form-control form-witdh-long-string" type="text" id="original_url" name="original_url" placeholder="原始订阅网址"
-                                    value="{{ subscribe.original_url }}">
+                                <input class="form-control form-witdh-long-string" type="text" id="url" name="url" placeholder="订阅网址" value="{{ subscribe.url }}">
                             </td>
                             <td>
-                                <input class="form-control form-witdh-long-string" type="text" id="convert_url" name="convert_url" placeholder="转换订阅网址"
-                                    value="{{ subscribe.convert_url }}">
+                                <input class="form-check-input" type="checkbox" name="converter" id="flexConverter-{{ loop.index }}" {% if subscribe.converter == 1 %}checked{% endif %}>
+                                <label class="form-check-label" for="flexConverter-{{ loop.index }}">启用订阅转换</label>
                             </td>
                             <td>
                                 <input class="form-control form-witdh-short-string" type="text" id="target" name="target" placeholder="转换目标"
@@ -130,10 +130,11 @@
                                 <input class="form-control form-witdh-short-string" type="text" id="name" name="name" placeholder="订阅名称">
                             </td>
                             <td>
-                                <input class="form-control form-witdh-long-string" type="text" id="original_url" name="original_url" placeholder="原始订阅网址">
+                                <input class="form-control form-witdh-long-string" type="text" id="url" name="url" placeholder="订阅网址">
                             </td>
                             <td>
-                                <input class="form-control form-witdh-long-string" type="text" id="convert_url" name="convert_url" placeholder="转换订阅网址">
+                                <input class="form-check-input" type="checkbox" name="converter" id="flexConverter-New">
+                                <label class="form-check-label" for="flexConverter-New">启用订阅转换</label>
                             </td>
                             <td>
                                 <input class="form-control form-witdh-short-string" type="text" id="target" name="target" placeholder="转换目标" value="clash">

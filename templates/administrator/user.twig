@@ -34,6 +34,7 @@
             <div class="form-floating mb-3">
                 <input type="text" class="form-control" id="newUid" name="newUid" placeholder="用户 UUID" value="{{ user.uid }}">
                 <label for="newUid">用户 UUID</label>
+                <div class="form-text">留空则随机生成。</div>
             </div>
             <input type="hidden" name="username" value="{{ user.username }}">
             <div class="form-floating mb-3">
@@ -41,14 +42,14 @@
                 <label for="newUsername">用户名</label>
             </div>
             <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="customConfigUrl" name="customConfigUrl" placeholder="自定义远程配置"
-                    {% if user.custom_config is not null %}value="{{ user.custom_config }}" {% endif %}>
-                <label for="customConfigUrl">自定义远程配置</label>
-            </div>
-            <div class="form-floating mb-3">
                 <input type="password" class="form-control" id="newPasswd" name="newPasswd" placeholder="new_password" autocomplete="new-password">
                 <label for="newPasswd">修改密码</label>
                 <div class="form-text">需要大写、小写字母和数字。长度不少于8个字符。留空则不修改。</div>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="customConfigUrl" name="customConfigUrl" placeholder="自定义远程配置"
+                    {% if user.custom_config is not null %}value="{{ user.custom_config }}" {% endif %}>
+                <label for="customConfigUrl">自定义远程配置</label>
             </div>
             <div class="form-check mb-3">
                 <input class="form-check-input" type="checkbox" name="isadmin" id="flexIsAdmin" {% if user.isadmin == 1 %}checked{% endif %}>

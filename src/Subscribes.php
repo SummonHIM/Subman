@@ -32,8 +32,8 @@ class Subscribes
                 if (date('Y-m-d H:i:s') < $i['expire']) {
                     // 若订阅仍未过期，则将过期时间，订阅地址以及共享账号添加至 group 数组内
                     $groups["expire"] = $i['expire'];
-                    $groups["subscribes"] = $db->getRowbyName("group_subscribes", 'sid, gid, name', array("gid" => $i['gid']), true);
-                    $groups["groupShare"] = $db->getRowbyName("group_share", 'name, account, password, manage', array("gid" => $i['gid']), true);
+                    $groups["subscribes"] = $db->getRowbyName("group_subscribes", 'sid, gid, name, converter, target', array("gid" => $i['gid']), true);
+                    $groups["share"] = $db->getRowbyName("group_share", 'name, account, password, manage', array("gid" => $i['gid']), true);
                 } else {
                     // 若订阅过期了，则删除部分键值，只保留部分关键信息。
                     unset($groups['sub_name']);
@@ -85,10 +85,10 @@ class Subscribes
         $db = new Database;
         $cfg = new Config;
 
-        $subscribes = $db->getRowbyName("group_subscribes", "gid, name, original_url, convert_url, target, options", array('sid' => $_GET['sub']));
+        $subscribes = $db->getRowbyName("group_subscribes", "*", array('sid' => $_GET['sub']));
         if (empty($subscribes)) {
             header('Content-Type: application/json');
-            http_response_code(401);
+            http_response_code(405);
             echo json_encode(array(
                 'Status' => 'Error',
                 'Message' => 'This subscribe ID does not contain any subscribe information.',
@@ -113,15 +113,15 @@ class Subscribes
         // 检查订阅是否已经过期
         if (date('Y-m-d H:i:s') < $expire) {
             // 没有过期则跳转正确的 url
-            if (isset($_GET['convert']) && $_GET['convert'] == 'true') {
+            if ($subscribes['converter'] == 1) {
                 // 如果使用改版订阅，则生成 subconverter 链接
-                $url = $cfg->getValue('WebSite', 'SubConverterUrl') . "target=" . $subscribes["target"] . "&url=" . urlencode($subscribes['convert_url']) . "&filename=" . urlencode($groups['name'] . ' 的 ' . $subscribes['name']) . "&" . $subscribes['options'];
+                $url = $cfg->getValue('WebSite', 'SubConverterUrl') . "target=" . $subscribes["target"] . "&url=" . urlencode($subscribes['url']) . "&filename=" . urlencode($groups['name'] . ' 的 ' . $subscribes['name']) . "&" . $subscribes['options'];
                 // 如果定义了 config 参数，则将 config 参数也合并进 url 中
-                if (isset($_GET['config']) && $_GET["config"])
+                if (!empty($_GET['config']))
                     $url .= "&config=" . urlencode($_GET["config"]);
             } else {
                 // 否则直接返回原订阅
-                $url = $subscribes['original_url'];
+                $url = $subscribes['url'];
             }
             echo json_encode(array(
                 'Status' => 'Success',
@@ -138,10 +138,12 @@ class Subscribes
                     echo "  - {name: 注意, type: select, proxies: [订阅已过期]}\n";
                     break;
                 default:
-                    echo "proxies:\n";
-                    echo "  - {name: 订阅已过期, type: ss, cipher: aes-128-gcm, server: dns.google, port: 4433, password: expire}\n";
-                    echo "proxy-groups:\n";
-                    echo "  - {name: 注意, type: select, proxies: [订阅已过期]}\n";
+                    header('Content-Type: application/json');
+                    http_response_code(401);
+                    echo json_encode(array(
+                        'Status' => 'Error',
+                        'Message' => 'Your subscription has expired.',
+                    ));
                     break;
             }
         }

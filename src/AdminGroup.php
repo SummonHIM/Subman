@@ -46,20 +46,21 @@ class AdminGroup extends Administrator
      */
     private function handleUpdateGroupConfig(): void
     {
-        if (empty($_POST['newGid']) || empty($_POST['gid']) || empty($_POST['name'])) {
-            $this->renderGroup("分组 UUID 和分组名称不得为空。");
+        if (empty($_POST['gid']) || empty($_POST['name'])) {
+            $this->renderGroup("分组名称不得为空。");
             http_response_code(405);
             return;
         }
 
-        if (!preg_match($this->uuidPattern, $_POST['newGid']) || !preg_match($this->uuidPattern, $_POST['gid'])) {
+        $newGid = empty($_POST['newGid']) ? $this->generateUUID() : $_POST['newGid'];
+        if (!preg_match($this->uuidPattern, $newGid) || !preg_match($this->uuidPattern, $_POST['gid'])) {
             $this->renderGroup("输入的 UUID 不是有效的 UUID 格式。");
             http_response_code(405);
             return;
         }
 
-        if ($_POST['gid'] != $_POST['newGid']) {
-            if ($this->checkDuplicate('groups', 'gid', $_POST['newGid'])) {
+        if ($_POST['gid'] != $newGid) {
+            if ($this->checkDuplicate('groups', 'gid', $newGid)) {
                 $this->renderGroup("分组 UUID 与其他分组重复。");
                 http_response_code(405);
                 return;
@@ -88,7 +89,7 @@ class AdminGroup extends Administrator
             $this->db->updateRow(
                 "groups",
                 array(
-                    'gid' => $_POST['newGid'],
+                    'gid' => $newGid,
                     'name' => $_POST['name'],
                     'sub_hp' => $_POST['sub_hp'],
                     'sub_account' => $_POST['sub_account'],
@@ -97,7 +98,7 @@ class AdminGroup extends Administrator
                 ),
                 array('gid' => $_POST['gid'])
             );
-            if ($_POST['gid'] != $_POST['newGid'])
+            if ($_POST['gid'] != $newGid)
                 $this->renderMain("Success");
             else
                 $this->renderGroup("Success");
@@ -149,13 +150,14 @@ class AdminGroup extends Administrator
      */
     private function handleUpdateCurrentSub(): void
     {
-        if (empty($_POST['newSid']) || empty($_POST['sid']) || empty($_POST['gid'])) {
-            $this->renderGroup("订阅 UUID 和分组 UUID（隐藏参数）不得为空。");
+        if (empty($_POST['sid']) || empty($_POST['gid']) || empty($_POST['name']) || empty($_POST['url'])) {
+            $this->renderGroup("除订阅 UUID、转换目标和转换选项外，其他内容不得为空。");
             http_response_code(405);
             return;
         }
 
-        if (!preg_match($this->uuidPattern, $_POST['newSid']) || !preg_match($this->uuidPattern, $_POST['sid']) || !preg_match($this->uuidPattern, $_POST['gid'])) {
+        $newSid = empty($_POST['newSid']) ? $this->generateUUID() : $_POST['newSid'];
+        if (!preg_match($this->uuidPattern, $newSid) || !preg_match($this->uuidPattern, $_POST['sid']) || !preg_match($this->uuidPattern, $_POST['gid'])) {
             $this->renderGroup("输入的 UUID 不是有效的 UUID 格式。");
             http_response_code(405);
             return;
@@ -169,32 +171,34 @@ class AdminGroup extends Administrator
             }
         }
 
-        if (strlen($_POST['original_url']) > 255 || strlen($_POST['convert_url']) > 255 || strlen($_POST['options']) > 255) {
+        if (strlen($_POST['url']) > 255 || strlen($_POST['options']) > 255) {
             $this->renderGroup("原始订阅网址、转换订阅网址或转换选项的长度超过 255，或不符合储存规范。");
             http_response_code(405);
             return;
         }
 
         if (strlen($_POST['name']) > 25) {
-            $this->renderGroup("订阅名称的长度超过 255，或订阅名称不符合储存规范。");
+            $this->renderGroup("订阅名称的长度超过 25，或订阅名称不符合储存规范。");
             http_response_code(405);
             return;
         }
 
         if (strlen($_POST['target']) > 15) {
-            $this->renderGroup("转换目标的长度超过 255，或转换目标不符合储存规范。");
+            $this->renderGroup("转换目标的长度超过 15，或转换目标不符合储存规范。");
             http_response_code(405);
             return;
         }
+
+        $converter = isset($_POST['converter']) ? 1 : 0;
 
         try {
             $this->db->updateRow(
                 "group_subscribes",
                 array(
-                    'sid' => $_POST['newSid'],
+                    'sid' => $newSid,
                     'name' => $_POST['name'],
-                    'original_url' => $_POST['original_url'],
-                    'convert_url' => $_POST['convert_url'],
+                    'url' => $_POST['url'],
+                    'converter' => $converter,
                     'target' => $_POST['target'],
                     'options' => $_POST['options']
                 ),
@@ -219,7 +223,7 @@ class AdminGroup extends Administrator
     private function handleDeleteCurrentSub(): void
     {
         if (empty($_POST['sid']) || empty($_POST['gid'])) {
-            $this->renderGroup("订阅 UUID 和分组 UUID（隐藏参数）不得为空。");
+            $this->renderGroup("订阅 UUID 不得为空。");
             http_response_code(405);
             return;
         }
@@ -253,8 +257,8 @@ class AdminGroup extends Administrator
      */
     private function handleCreateNewSub(): void
     {
-        if (empty($_POST['gid']) || empty($_POST['name']) || empty($_POST['original_url']) || empty($_POST['convert_url'])) {
-            $this->renderGroup("分组 UUID（隐藏参数）、订阅名称、原始订阅网址或转换订阅网址不得为空。");
+        if (empty($_POST['gid']) || empty($_POST['name']) || empty($_POST['url'])) {
+            $this->renderGroup("除订阅 UUID、转换目标和转换选项外，其他内容不得为空。");
             http_response_code(405);
             return;
         }
@@ -275,6 +279,26 @@ class AdminGroup extends Administrator
         $target = empty($_POST['target']) ? 'clash' : $_POST['target'];
         $options = empty($_POST['options']) ? 'emoji=true&udp=true&new_name=true' : $_POST['options'];
 
+        if (strlen($_POST['url']) > 255 || strlen($_POST['options']) > 255) {
+            $this->renderGroup("原始订阅网址、转换订阅网址或转换选项的长度超过 255，或不符合储存规范。");
+            http_response_code(405);
+            return;
+        }
+
+        if (strlen($_POST['name']) > 25) {
+            $this->renderGroup("订阅名称的长度超过 25，或订阅名称不符合储存规范。");
+            http_response_code(405);
+            return;
+        }
+
+        if (strlen($_POST['target']) > 15) {
+            $this->renderGroup("转换目标的长度超过 15，或转换目标不符合储存规范。");
+            http_response_code(405);
+            return;
+        }
+
+        $converter = isset($_POST['converter']) ? 1 : 0;
+
         try {
             $this->db->insertNewRow(
                 "group_subscribes",
@@ -282,8 +306,8 @@ class AdminGroup extends Administrator
                     'sid' => $sid,
                     'gid' => $_POST['gid'],
                     'name' => $_POST['name'],
-                    'original_url' => $_POST['original_url'],
-                    'convert_url' => $_POST['convert_url'],
+                    'url' => $_POST['url'],
+                    'converter' => $converter,
                     'target' => $target,
                     'options' => $options
                 ),
@@ -406,6 +430,18 @@ class AdminGroup extends Administrator
 
         if ($this->checkDuplicate('group_share', 'gsid', $gsid)) {
             $this->renderGroup("订阅 UUID 与其他分组重复。");
+            http_response_code(405);
+            return;
+        }
+
+        if (strlen($_POST['name']) > 50 || strlen($_POST['password']) > 50) {
+            $this->renderGroup("账号名称或密码的长度超过 50，或不符合储存规范。");
+            http_response_code(405);
+            return;
+        }
+
+        if (strlen($_POST['account']) > 255 || strlen($_POST['manage']) > 255) {
+            $this->renderGroup("账号或管理账号网址的长度超过 255，或不符合储存规范。");
             http_response_code(405);
             return;
         }

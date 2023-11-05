@@ -37,20 +37,21 @@ class AdminUser extends Administrator
      */
     private function handleUpdateUserConfig(): void
     {
-        if (empty($_POST['newUid']) || empty($_POST['uid']) || empty($_POST['newUsername']) || empty($_POST['username'])) {
-            $this->renderUser("用户 UUID 和用户名不得为空。");
+        if (empty($_POST['uid']) || empty($_POST['newUsername']) || empty($_POST['username'])) {
+            $this->renderUser("用户名不得为空。");
             http_response_code(405);
             return;
         }
 
-        if (!preg_match($this->uuidPattern, $_POST['newUid']) || !preg_match($this->uuidPattern, $_POST['uid'])) {
+        $newUid = empty($_POST['newUid']) ? $this->generateUUID() : $_POST['newUid'];
+        if (!preg_match($this->uuidPattern, $newUid) || !preg_match($this->uuidPattern, $_POST['uid'])) {
             $this->renderUser("输入的 UUID 不是有效的 UUID 格式。");
             http_response_code(405);
             return;
         }
 
-        if ($_POST['uid'] != $_POST['newUid']) {
-            if ($this->checkDuplicate('users', 'uid', $_POST['newUid'])) {
+        if ($_POST['uid'] != $newUid) {
+            if ($this->checkDuplicate('users', 'uid', $newUid)) {
                 $this->renderUser("用户 UUID 与其他用户重复。");
                 http_response_code(405);
                 return;
@@ -87,7 +88,7 @@ class AdminUser extends Administrator
 
         $isAdmin = isset($_POST['isadmin']) ? 1 : 0;
         $updateRow = array(
-            'uid' => $_POST['newUid'],
+            'uid' => $newUid,
             'username' => $_POST['newUsername'],
             'custom_config' => $_POST['customConfigUrl'],
             'isadmin' => $isAdmin
@@ -101,7 +102,7 @@ class AdminUser extends Administrator
                 $updateRow,
                 array('uid' => $_POST['uid'])
             );
-            if ($_POST['uid'] != $_POST['newUid'])
+            if ($_POST['uid'] != $newUid)
                 $this->renderMain("Success");
             else
                 $this->renderUser("Success");
