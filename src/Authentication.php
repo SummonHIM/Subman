@@ -78,7 +78,10 @@ class Authentication
             $loader = new \Twig\Loader\FilesystemLoader("templates");
             $twig = new \Twig\Environment($loader);
             $template = $twig->load("login.twig");
-            echo $template->render(["loginResult" => $loginResult]);
+            echo $template->render([
+                "loginResult" => $loginResult,
+                'baseUrl' => $cfg->getValue('WebSite', 'BaseUrl')
+            ]);
         }
     }
 
