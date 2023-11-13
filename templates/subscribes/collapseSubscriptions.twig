@@ -11,7 +11,7 @@
             <div class="alert alert-primary" role="alert">该链接将自动重定向至现有订阅。你可以不用经常更换订阅链接。若链接失效则尽快联系管理员。</div>
             {% for sub in item.subscribes %}
             {% set subUrl = subApiUrl ~ '?sub=' ~ sub.sid ~ '&user=' ~ uid %}
-            {% if sub.converter == 1 %}
+            {% if sub.converter == 1 and customConfig is not empty %}
             {% set subUrl = subUrl ~ '&config=' ~ customConfig | url_encode %}
             {% endif %}
             {% set suggestionName = item.name ~ ' ' ~ sub.name %}

@@ -17,11 +17,15 @@
                 </div>
                 <form method="post" action="{{ baseUrl }}/admin?type=groups">
                     <div class="modal-body">
-                        <div class="form-floating mb-3">
-                            <input type="text" class="form-control" id="gid" name="gid" placeholder="分组 UUID">
-                            <label for="gid">分组 UUID</label>
-                            <div class="form-text">留空则自动创建。</div>
+                        <div class="input-group">
+                            <div class="form-floating">
+                                <input type="text" class="form-control" id="gid" name="gid" placeholder="分组 UUID" value="{{ group.gid }}">
+                                <label for="gid">分组 UUID</label>
+                            </div>
+                            <button type="button" class="btn btn-outline-secondary" onclick="onClickGenUUID(this)" data-output="gid">∞</button>
                         </div>
+                        <div class="form-text mb-3">留空则随机生成。</div>
+
                         <div class="form-floating mb-3">
                             <input type="text" class="form-control" id="name" name="name" placeholder="分组名称">
                             <label for="name">分组名称</label>

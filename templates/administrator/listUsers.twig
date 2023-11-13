@@ -17,11 +17,15 @@
                 </div>
                 <form method="post" action="{{ baseUrl }}/admin?type=users">
                     <div class="modal-body">
-                        <div class="form-floating mb-3">
-                            <input type="text" class="form-control" id="uid" name="uid" placeholder="用户 UUID">
-                            <label for="uid">用户 UUID</label>
-                            <div class="form-text">留空则自动创建。</div>
+                        <div class="input-group">
+                            <div class="form-floating">
+                                <input type="text" class="form-control" id="uid" name="uid" placeholder="UUID" value="{{ uid }}">
+                                <label for="uid">用户 UUID</label>
+                            </div>
+                            <button type="button" class="btn btn-outline-secondary" onclick="onClickGenUUID(this)" data-output="uid">∞</button>
                         </div>
+                        <div class="form-text mb-3">留空则自动创建。</div>
+
                         <div class="form-floating mb-3">
                             <input type="text" class="form-control" id="username" name="username" placeholder="用户名">
                             <label for="username">用户名</label>

@@ -55,7 +55,7 @@
                                 <input type="text" class="form-control" id="uid" name="uid" placeholder="UUID" value="{{ uid }}">
                                 <label for="uid">用户 UUID</label>
                             </div>
-                            <span class="input-group-text" aria-describedby="basic-addon1"><a href="#" id="generateLink" style="text-decoration: none;">∞</a></span>
+                            <button type="button" class="btn btn-outline-secondary" onclick="onClickGenUUID(this)" data-output="uid">∞</button>
                         </div>
                         <div class="form-text text-danger mb-3">用户 UUID 用于直接获取订阅数据，请妥善保管好用户 UUID！</div>
 
@@ -89,29 +89,4 @@
         </div>
     </div>
 </div>
-
-<script>
-    function generateUUID() {
-        // 生成一个随机的UUID
-        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-            var r = Math.random() * 16 | 0,
-                v = c == 'x' ? r : (r & 0x3 | 0x8);
-            return v.toString(16);
-        });
-    }
-
-    // 获取具有id为"uid"的input元素和具有id为"generateLink"的链接元素
-    var uidInput = document.getElementById("uid");
-    var generateLink = document.getElementById("generateLink");
-
-    // 添加点击事件监听器
-    generateLink.addEventListener("click", function (event) {
-        event.preventDefault(); // 防止链接跳转
-        if (uidInput) {
-            uidInput.value = generateUUID();
-        } else {
-            console.log("The input element with id 'uid' was not found.");
-        }
-    });
-</script>
 {% endblock %}

@@ -125,8 +125,7 @@ class Administrator
             return;
         }
         $userSubs = $self->db->getRowbyName("user_subscribes", '*', array("uid" => $editingUID), true);
-        $groups = $self->db->getTable("groups", "gid, name");
-        foreach ($groups as $iGroup) {
+        foreach ($self->db->getTable("groups", "gid, name") as $iGroup) {
             $groupNames[$iGroup['gid']] = $iGroup['name'];
         }
 
@@ -158,6 +157,10 @@ class Administrator
         }
         $subscribes = $self->db->getRowbyNameOrder("group_subscribes", '*', array("gid" => $_GET['gid']), array("orderlist" => "ASC"), true);
         $groupShare = $self->db->getRowbyName("group_share", '*', array("gid" => $_GET['gid']), true);
+        $userSubs = $self->db->getRowbyName("user_subscribes", '*', array("gid" => $_GET['gid']), true);
+        foreach ($self->db->getTable("users", "uid, username") as $iUser) {
+            $userNames[$iUser['uid']] = $iUser['username'];
+        }
 
         $template = $self->twig->load("administrator/group.twig");
         echo $template->render(array(
@@ -168,7 +171,9 @@ class Administrator
             'group' => $group,
             'subscribes' => $subscribes,
             'groupShare' => $groupShare,
-            'execMessage' => $message
+            'execMessage' => $message,
+            'userSubs' => $userSubs,
+            'userNames' => $userNames
         ));
     }
 

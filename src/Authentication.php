@@ -72,7 +72,7 @@ class Authentication
         $cfg = new Config();
         $baseUrl = $cfg->getValue('WebSite', 'BaseUrl');
 
-        if (isset($_SESSION['username'])) {
+        if (isset($_SESSION['username']) || isset($_SESSION['uid'])) {
             header("Location: " . $baseUrl . "/");
         } else {
             $loader = new \Twig\Loader\FilesystemLoader("templates");

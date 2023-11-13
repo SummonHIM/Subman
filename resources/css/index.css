@@ -1,0 +1,23 @@
+.form-witdh-uuid {
+    min-width: 395px;
+}
+
+.form-witdh-tinyint {
+    min-width: 75px;
+}
+
+.form-witdh-short-string {
+    min-width: 150px;
+}
+
+.form-witdh-medium-string {
+    min-width: 300px;
+}
+
+.form-witdh-long-string {
+    min-width: 550px;
+}
+
+.form-witdh-xx1 {
+    min-width: 550px;
+}

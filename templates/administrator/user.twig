@@ -2,28 +2,6 @@
 
 {% block title %}{{ user.username }} - 用户管理 - 后台管理{% endblock %}
 {% block adminContent %}
-<style>
-    .form-witdh-uuid {
-        min-width: 355px;
-    }
-
-    .form-witdh-short-string {
-        min-width: 150px;
-    }
-
-    .form-witdh-medium-string {
-        min-width: 300px;
-    }
-
-    .form-witdh-long-string {
-        min-width: 550px;
-    }
-
-    .form-witdh-xx1 {
-        min-width: 550px;
-    }
-</style>
-
 <h2>{{ user.username }}</h2>
 
 <div class="card mb-3">
@@ -31,11 +9,16 @@
         <h4>用户设置</h4>
         <form method="post">
             <input type="hidden" name="uid" value="{{ user.uid }}">
-            <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="newUid" name="newUid" placeholder="用户 UUID" value="{{ user.uid }}">
-                <label for="newUid">用户 UUID</label>
-                <div class="form-text">留空则随机生成。</div>
+            <div class="input-group">
+                <div class="form-floating">
+                    <input type="text" class="form-control" id="newUid" name="newUid" placeholder="用户 UUID" value="{{ user.uid }}">
+                    <label for="newUid">用户 UUID</label>
+                </div>
+                <button type="button" class="btn btn-outline-secondary" onclick="onClickGenUUID(this)" data-output="newUid">∞</button>
+
             </div>
+            <div class="form-text mb-3">留空则随机生成。</div>
+
             <input type="hidden" name="username" value="{{ user.username }}">
             <div class="form-floating mb-3">
                 <input type="text" class="form-control" id="newUsername" name="newUsername" placeholder="用户名" value="{{ user.username }}">
@@ -84,11 +67,11 @@
                         <form method="post">
                             <input type="hidden" name="uid" value="{{ user.uid }}">
                             <td>
-                                <input class="form-control form-witdh-medium-string" type="text" id="username" value="{{ groupNames[userSub.gid] }}" readonly>
+                                <input class="form-control form-witdh-medium-string" type="text" id="usersub-username-{{ loop.index }}" value="{{ groupNames[userSub.gid] }}" readonly>
                                 <input type="hidden" name="gid" value="{{ userSub.gid }}">
                             </td>
                             <td>
-                                <input class="form-control" type="datetime-local" id="expire" name="expire" value="{{ userSub.expire | date('Y-m-d\\TH:i:s') }}">
+                                <input class="form-control" type="datetime-local" id="usersub-expire-{{ loop.index }}" name="expire" value="{{ userSub.expire | date('Y-m-d\\TH:i:s') }}">
                             </td>
                             <td>
                                 <button class="btn btn-primary" type="submit" name="type" value="updateCurrentSub">保存</button>
@@ -119,7 +102,7 @@
                                 </select>
                             </td>
                             <td>
-                                <input class="form-control" type="datetime-local" id="expire" name="expire">
+                                <input class="form-control" type="datetime-local" id="usersub-expire-New" name="expire">
                             </td>
                             <td>
                                 <button class="btn btn-primary" type="submit" name="type" value="createNewSub">添加</button>

@@ -35,6 +35,15 @@ class AdminGroup extends Administrator
             case "createNewAccount":
                 $self->handleCreateNewAccount();
                 break;
+            case "updateCurrentUser":
+                $self->handleUpdateCurrentUser();
+                break;
+            case "deleteCurrentUser":
+                $self->handleDeleteCurrentUser();
+                break;
+            case "createNewUser":
+                $self->handleCreateNewUser();
+                break;
             default:
                 header("Location: " . $self->cfg->getValue('WebSite', 'BaseUrl') . "/");
                 break;
@@ -189,8 +198,8 @@ class AdminGroup extends Administrator
             return;
         }
 
-        if ($_POST['orderlist'] > 255) {
-            $this->renderGroup("排序不能超过 255。");
+        if ($_POST['orderlist'] <= 0 || $_POST['orderlist'] > 255) {
+            $this->renderGroup("排序不能超过 255 或小于0。");
             http_response_code(405);
             return;
         }
@@ -283,9 +292,7 @@ class AdminGroup extends Administrator
             return;
         }
 
-        $target = empty($_POST['target']) ? 'clash' : $_POST['target'];
-        $options = empty($_POST['options']) ? 'emoji=true&udp=true&new_name=true' : $_POST['options'];
-        $orderlist = empty($_POST['orderlist']) ? 0 : $_POST['orderlist'];
+        $orderlist = empty($_POST['orderlist']) ? 1 : $_POST['orderlist'];
 
         if (strlen($_POST['url']) > 255 || strlen($_POST['options']) > 255) {
             $this->renderGroup("原始订阅网址、转换订阅网址或转换选项的长度超过 255，或不符合储存规范。");
@@ -305,8 +312,8 @@ class AdminGroup extends Administrator
             return;
         }
 
-        if ($_POST['orderlist'] > 255) {
-            $this->renderGroup("排序不能超过 255。");
+        if ($_POST['orderlist'] <= 0 || $_POST['orderlist'] > 255) {
+            $this->renderGroup("排序不能超过 255 或小于0。");
             http_response_code(405);
             return;
         }
@@ -323,8 +330,8 @@ class AdminGroup extends Administrator
                     'name' => $_POST['name'],
                     'url' => $_POST['url'],
                     'converter' => $converter,
-                    'target' => $target,
-                    'options' => $options
+                    'target' => $_POST['target'],
+                    'options' => $_POST['options']
                 ),
             );
             $this->renderGroup("Success");
@@ -482,4 +489,115 @@ class AdminGroup extends Administrator
             }
         }
     }
-}
+
+    /**
+     * 处理更新现有用户
+     */
+    private function handleUpdateCurrentUser()
+    {
+        if (empty($_POST['uid']) || empty($_POST['gid'])) {
+            $this->renderGroup("用户 UUID 和分组 UUID 不得为空。");
+            http_response_code(405);
+            return;
+        }
+
+        if (!preg_match($this->uuidPattern, $_POST['uid']) || !preg_match($this->uuidPattern, $_POST['gid'])) {
+            $this->renderGroup("输入的 UUID 不是有效的 UUID 格式。");
+            http_response_code(405);
+            return;
+        }
+
+        $expire = !empty($_POST['expire']) ? date("Y-m-d H:i:s", strtotime(str_replace("T", " ", $_POST['expire']))) : date("Y-m-d H:i:s", time());
+
+        try {
+            $this->db->updateRow(
+                "user_subscribes",
+                array('expire' => $expire),
+                array(
+                    'uid' => $_POST['uid'],
+                    'gid' => $_POST['gid']
+                )
+            );
+            $this->renderGroup("Success");
+        } catch (\PDOException $e) {
+            if ($this->cfg->getValue('WebSite', 'Debug')) {
+                $this->renderGroup($e->getMessage());
+            } else {
+                $this->renderGroup("服务器内部错误！保存失败。");
+            }
+        }
+    }
+
+    /**
+     * 处理删除某用户
+     */
+    private function handleDeleteCurrentUser()
+    {
+        if (empty($_POST['uid']) || empty($_POST['gid'])) {
+            $this->renderGroup("用户 UUID 和分组 UUID 不得为空。");
+            http_response_code(405);
+            return;
+        }
+
+        if (!preg_match($this->uuidPattern, $_POST['uid']) || !preg_match($this->uuidPattern, $_POST['gid'])) {
+            $this->renderGroup("输入的 UUID 不是有效的 UUID 格式。");
+            http_response_code(405);
+            return;
+        }
+
+        try {
+            $this->db->deleteRow(
+                "user_subscribes",
+                array(
+                    'uid' => $_POST['uid'],
+                    'gid' => $_POST['gid']
+                )
+            );
+            $this->renderGroup("用户已删除。");
+        } catch (\PDOException $e) {
+            if ($this->cfg->getValue('WebSite', 'Debug')) {
+                $this->renderGroup($e->getMessage());
+            } else {
+                $this->renderGroup("服务器内部错误！保存失败。");
+            }
+        }
+    }
+
+    /**
+     * 处理添加新用户
+     */
+    private function handleCreateNewUser()
+    {
+        if (empty($_POST['uid']) || empty($_POST['gid'])) {
+            $this->renderGroup("用户 UUID 和分组 UUID 不得为空。");
+            http_response_code(405);
+            return;
+        }
+
+        if (!preg_match($this->uuidPattern, $_POST['uid']) || !preg_match($this->uuidPattern, $_POST['gid'])) {
+            $this->renderGroup("输入的 UUID 不是有效的 UUID 格式。");
+            http_response_code(405);
+            return;
+        }
+
+        $expire = !empty($_POST['expire']) ? date("Y-m-d H:i:s", strtotime(str_replace("T", " ", $_POST['expire']))) : date("Y-m-d H:i:s", time());
+
+        try {
+            $this->db->insertNewRow(
+                "user_subscribes",
+                array(
+                    'uid' => $_POST['uid'],
+                    'gid' => $_POST['gid'],
+                    'expire' => $expire,
+                ),
+            );
+            $this->renderGroup("Success");
+        } catch (\PDOException $e) {
+            if ($this->cfg->getValue('WebSite', 'Debug')) {
+                $this->renderGroup($e->getMessage());
+            } else {
+                $this->renderGroup("服务器内部错误！保存失败。");
+            }
+        }
+    }
+};
