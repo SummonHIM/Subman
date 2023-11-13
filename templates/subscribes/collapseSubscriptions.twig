@@ -14,7 +14,12 @@
             {% if sub.converter == 1 and customConfig is not empty %}
             {% set subUrl = subUrl ~ '&config=' ~ customConfig | url_encode %}
             {% endif %}
+
+            {% if item.name|slice(-1) matches '/[\\x{4e00}-\\x{9fff}]/u' and sub.name|slice(0, 1) matches '/[\\x{4e00}-\\x{9fff}]/u' %}
+            {% set suggestionName = item.name ~ sub.name %}
+            {% else %}
             {% set suggestionName = item.name ~ ' ' ~ sub.name %}
+            {% endif %}
 
             {% if not loop.first %}
             <hr class="mt-4 mb-4">

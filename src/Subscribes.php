@@ -114,8 +114,14 @@ class Subscribes
         if (date('Y-m-d H:i:s') < $expire) {
             // 没有过期则跳转正确的 url
             if ($subscribes['converter'] == 1) {
+                // 生成文件名
+                $pattern1 = '/[\p{Han}\p{Katakana}\p{Hiragana}\p{Hangul}]$/u';
+                $pattern2 = '/^[\p{Han}\p{Katakana}\p{Hiragana}\p{Hangul}]/u';
+                $addSpace = (preg_match($pattern1, $groups['name']) && preg_match($pattern2, $subscribes['name'])) ? false : true;
+                $suggestionName = $groups['name'] . ($addSpace ? ' ' : '') . $subscribes['name'];
+
                 // 如果使用改版订阅，则生成 subconverter 链接
-                $url = $cfg->getValue('WebSite', 'SubConverterUrl') . "target=" . $subscribes["target"] . "&url=" . urlencode($subscribes['url']) . "&filename=" . urlencode($groups['name'] . ' ' . $subscribes['name']) . "&" . $subscribes['options'];
+                $url = $cfg->getValue('WebSite', 'SubConverterUrl') . "target=" . $subscribes["target"] . "&url=" . urlencode($subscribes['url']) . "&filename=" . urlencode($suggestionName) . "&" . $subscribes['options'];
                 // 如果定义了 config 参数，则将 config 参数也合并进 url 中
                 if (!empty($_GET['config']))
                     $url .= "&config=" . urlencode($_GET["config"]);
