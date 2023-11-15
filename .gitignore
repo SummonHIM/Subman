@@ -6,4 +6,3 @@ composer.phar
 # composer.lock
 
 /config.php
-/api.php
