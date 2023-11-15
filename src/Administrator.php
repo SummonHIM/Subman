@@ -2,6 +2,7 @@
 
 namespace Subman;
 
+use Subman\UUID;
 use Subman\Config;
 use Subman\Database;
 
@@ -10,15 +11,18 @@ class Administrator
     public $cfg;
     public $db;
     public $twig;
+    public $uuid;
     public $isAdmin;
-    public $uuidPattern;
 
     public function __construct()
     {
+        $this->uuid = new UUID();
         $this->cfg = new Config();
         $this->db = new Database();
+
         $twigLoader = new \Twig\Loader\FilesystemLoader("templates");
         $this->twig = new \Twig\Environment($twigLoader);
+
         $this->isAdmin = $this->db->getRowbyName("users", 'isadmin', array("uid" => $_SESSION['uid']))['isadmin'];
         if (!isset($_SESSION['username']) || !isset($_SESSION['uid']) || $this->isAdmin != 1) {
             http_response_code(401);
@@ -26,7 +30,6 @@ class Administrator
                 header("Location: " . $this->cfg->getValue('WebSite', 'BaseUrl') . "/");
             exit();
         }
-        $this->uuidPattern = '/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/';
     }
 
     /**
@@ -124,7 +127,7 @@ class Administrator
             header("Location: " . $self->cfg->getValue('WebSite', 'BaseUrl') . "/admin");
             return;
         }
-        $userSubs = $self->db->getRowbyName("user_subscribes", '*', array("uid" => $editingUID), true);
+        $userSubs = $self->db->getRowbyName("user_groups", '*', array("uid" => $editingUID), true);
         foreach ($self->db->getTable("groups", "gid, name") as $iGroup) {
             $groupNames[$iGroup['gid']] = $iGroup['name'];
         }
@@ -157,7 +160,7 @@ class Administrator
         }
         $subscribes = $self->db->getRowbyNameOrder("group_subscribes", '*', array("gid" => $_GET['gid']), array("orderlist" => "ASC"), true);
         $groupShare = $self->db->getRowbyName("group_share", '*', array("gid" => $_GET['gid']), true);
-        $userSubs = $self->db->getRowbyName("user_subscribes", '*', array("gid" => $_GET['gid']), true);
+        $userSubs = $self->db->getRowbyName("user_groups", '*', array("gid" => $_GET['gid']), true);
         foreach ($self->db->getTable("users", "uid, username") as $iUser) {
             $userNames[$iUser['uid']] = $iUser['username'];
         }
@@ -207,20 +210,20 @@ class Administrator
             return;
         }
 
-        $uid = empty($_POST['uid']) ? $this->generateUUID() : $_POST['uid'];
-        if (!preg_match($this->uuidPattern, $uid)) {
+        $uid = empty($_POST['uid']) ? $this->uuid->generateUUID() : $_POST['uid'];
+        if (!$this->uuid->checkUUID($uid)) {
             $this->renderMain("输入的 UUID 不是有效的 UUID 格式。");
             http_response_code(405);
             return;
         }
 
-        if ($this->checkDuplicate('users', 'uid', $uid)) {
+        if ($this->db->checkDuplicate('users', 'uid', $uid)) {
             $this->renderMain("用户 UUID 与其他用户重复。");
             http_response_code(405);
             return;
         }
 
-        if ($this->checkDuplicate('users', 'username', $_POST['username'])) {
+        if ($this->db->checkDuplicate('users', 'username', $_POST['username'])) {
             $this->renderMain("用户名与其他用户重复。");
             http_response_code(405);
             return;
@@ -262,14 +265,14 @@ class Administrator
             return;
         }
 
-        $gid = empty($_POST['gid']) ? $this->generateUUID() : $_POST['gid'];
-        if (!preg_match($this->uuidPattern, $gid)) {
+        $gid = empty($_POST['gid']) ? $this->uuid->generateUUID() : $_POST['gid'];
+        if (!$this->uuid->checkUUID($gid)) {
             $this->renderMain("输入的 UUID 不是有效的 UUID 格式。");
             http_response_code(405);
             return;
         }
 
-        if ($this->checkDuplicate('groups', 'gid', $gid)) {
+        if ($this->db->checkDuplicate('groups', 'gid', $gid)) {
             $this->renderMain("分组 UUID 与其他分组重复。");
             http_response_code(405);
             return;
@@ -291,41 +294,5 @@ class Administrator
                 $this->renderMain("服务器内部错误！保存失败。");
             }
         }
-    }
-
-    /**
-     * 生成 UUID
-     * @return string UUID
-     */
-    public function generateUUID(): string
-    {
-        if (function_exists('random_bytes')) {
-            $data = random_bytes(16);
-        } elseif (function_exists('openssl_random_pseudo_bytes')) {
-            $data = openssl_random_pseudo_bytes(16);
-        } else {
-            $data = uniqid(mt_rand(), true);
-        }
-
-        $data[6] = chr(ord($data[6]) & 0x0f | 0x40); // 设置版本为4
-        $data[8] = chr(ord($data[8]) & 0x3f | 0x80); // 设置为 IETF 格式
-
-        return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
-    }
-
-    /**
-     * 检查内容是否有重复
-     * @param string $table 数据库表名
-     * @param string $colName 列名
-     * @param string $checkString 需检查的内容
-     * @return bool 若查出来了则 True，没查出来则 False
-     */
-    public function checkDuplicate(string $table, string $colName, string $checkString): bool
-    {
-        $checkResult = $this->db->getRowbyName($table, $colName, array($colName => $checkString));
-        if (empty($checkResult))
-            return false;
-        else
-            return true;
     }
 }

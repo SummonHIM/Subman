@@ -23,7 +23,7 @@ class Subscribes
             $users = $db->getRowbyName("users", 'isadmin, custom_config', array("uid" => $_SESSION['uid']));
 
             // 获取并循环 userSubs
-            $userSubs = $db->getRowbyName("user_subscribes", '*', array("uid" => $_SESSION['uid']), true);
+            $userSubs = $db->getRowbyName("user_groups", '*', array("uid" => $_SESSION['uid']), true);
             $renderGroupSubs = [];
             foreach ($userSubs as $i) {
                 // 根据 userSubs 中的 gid 查找订阅组信息
@@ -97,7 +97,7 @@ class Subscribes
         }
 
         $groups = $db->getRowbyName("groups", "name", array("gid" => $subscribes['gid']));
-        $expire = $db->getRowbyName("user_subscribes", "expire", array('gid' => $subscribes['gid'], 'uid' => $_GET['user']))['expire'];
+        $expire = $db->getRowbyName("user_groups", "expire", array('gid' => $subscribes['gid'], 'uid' => $_GET['user']))['expire'];
         if (empty($expire)) {
             header('Content-Type: application/json');
             http_response_code(401);

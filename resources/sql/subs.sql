@@ -67,17 +67,29 @@ CREATE TABLE IF NOT EXISTS `users` (
 
 -- 数据导出被取消选择。
 
--- 导出  表 subs.user_subscribes 结构
-CREATE TABLE IF NOT EXISTS `user_subscribes` (
-  `usid` uuid NOT NULL DEFAULT uuid(),
+-- 导出  表 subs.user_groups 结构
+CREATE TABLE IF NOT EXISTS `user_groups` (
+  `ugid` uuid NOT NULL DEFAULT uuid(),
   `uid` uuid NOT NULL DEFAULT uuid(),
   `gid` uuid NOT NULL DEFAULT uuid(),
   `expire` datetime NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`usid`) USING BTREE,
+  PRIMARY KEY (`ugid`) USING BTREE,
   KEY `usersubs_ibfk_uid` (`uid`) USING BTREE,
   KEY `usersubs_ibfk_gid` (`gid`) USING BTREE,
-  CONSTRAINT `user_subscribes_ibfk_gid` FOREIGN KEY (`gid`) REFERENCES `groups` (`gid`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `user_subscribes_ibfk_uid` FOREIGN KEY (`uid`) REFERENCES `users` (`uid`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `user_groups_ibfk_gid` FOREIGN KEY (`gid`) REFERENCES `groups` (`gid`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `user_groups_ibfk_uid` FOREIGN KEY (`uid`) REFERENCES `users` (`uid`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- 数据导出被取消选择。
+
+-- 导出  表 subs.user_sessions 结构
+CREATE TABLE IF NOT EXISTS `user_sessions` (
+  `session_id` uuid NOT NULL,
+  `uid` uuid NOT NULL,
+  `expire` datetime NOT NULL,
+  PRIMARY KEY (`session_id`),
+  KEY `uid` (`uid`),
+  CONSTRAINT `FK_user_sessions_users` FOREIGN KEY (`uid`) REFERENCES `users` (`uid`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- 数据导出被取消选择。

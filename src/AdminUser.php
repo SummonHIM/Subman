@@ -43,15 +43,15 @@ class AdminUser extends Administrator
             return;
         }
 
-        $newUid = empty($_POST['newUid']) ? $this->generateUUID() : $_POST['newUid'];
-        if (!preg_match($this->uuidPattern, $newUid) || !preg_match($this->uuidPattern, $_POST['uid'])) {
+        $newUid = empty($_POST['newUid']) ? $this->uuid->generateUUID() : $_POST['newUid'];
+        if (!$this->uuid->checkUUID($newUid) || !$this->uuid->checkUUID($_POST['uid'])) {
             $this->renderUser("输入的 UUID 不是有效的 UUID 格式。");
             http_response_code(405);
             return;
         }
 
         if ($_POST['uid'] != $newUid) {
-            if ($this->checkDuplicate('users', 'uid', $newUid)) {
+            if ($this->db->checkDuplicate('users', 'uid', $newUid)) {
                 $this->renderUser("用户 UUID 与其他用户重复。");
                 http_response_code(405);
                 return;
@@ -59,7 +59,7 @@ class AdminUser extends Administrator
         }
 
         if ($_POST['username'] != $_POST['newUsername']) {
-            if ($this->checkDuplicate('users', 'uid', $_POST['newUsername'])) {
+            if ($this->db->checkDuplicate('users', 'uid', $_POST['newUsername'])) {
                 $this->renderUser("用户名与其他用户重复。");
                 http_response_code(405);
                 return;
@@ -126,7 +126,7 @@ class AdminUser extends Administrator
             return;
         }
 
-        if (!preg_match($this->uuidPattern, $_POST['uid'])) {
+        if (!$this->uuid->checkUUID($_POST['uid'])) {
             $this->renderUser("输入的 UUID 不是有效的 UUID 格式。");
             http_response_code(405);
             return;
@@ -160,7 +160,7 @@ class AdminUser extends Administrator
             return;
         }
 
-        if (!preg_match($this->uuidPattern, $_POST['uid']) || !preg_match($this->uuidPattern, $_POST['gid'])) {
+        if (!$this->uuid->checkUUID($_POST['uid']) || !$this->uuid->checkUUID($_POST['gid'])) {
             $this->renderUser("输入的 UUID 不是有效的 UUID 格式。");
             http_response_code(405);
             return;
@@ -170,7 +170,7 @@ class AdminUser extends Administrator
 
         try {
             $this->db->updateRow(
-                "user_subscribes",
+                "user_groups",
                 array('expire' => $expire),
                 array(
                     'uid' => $_POST['uid'],
@@ -198,7 +198,7 @@ class AdminUser extends Administrator
             return;
         }
 
-        if (!preg_match($this->uuidPattern, $_POST['uid']) || !preg_match($this->uuidPattern, $_POST['gid'])) {
+        if (!$this->uuid->checkUUID($_POST['uid']) || !$this->uuid->checkUUID($_POST['gid'])) {
             $this->renderUser("输入的 UUID 不是有效的 UUID 格式。");
             http_response_code(405);
             return;
@@ -206,7 +206,7 @@ class AdminUser extends Administrator
 
         try {
             $this->db->deleteRow(
-                "user_subscribes",
+                "user_groups",
                 array(
                     'uid' => $_POST['uid'],
                     'gid' => $_POST['gid']
@@ -233,7 +233,7 @@ class AdminUser extends Administrator
             return;
         }
 
-        if (!preg_match($this->uuidPattern, $_POST['uid']) || !preg_match($this->uuidPattern, $_POST['gid'])) {
+        if (!$this->uuid->checkUUID($_POST['uid']) || !$this->uuid->checkUUID($_POST['gid'])) {
             $this->renderUser("输入的 UUID 不是有效的 UUID 格式。");
             http_response_code(405);
             return;
@@ -243,7 +243,7 @@ class AdminUser extends Administrator
 
         try {
             $this->db->insertNewRow(
-                "user_subscribes",
+                "user_groups",
                 array(
                     'uid' => $_POST['uid'],
                     'gid' => $_POST['gid'],

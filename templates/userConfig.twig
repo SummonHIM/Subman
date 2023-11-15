@@ -32,14 +32,12 @@
                             <input type="password" class="form-control" id="newPasswd" name="newPasswd" placeholder="new_password" autocomplete="new-password">
                             <label for="newPasswd">新密码</label>
                         </div>
-                        <div class="form-floating">
+                        <div class="form-floating mb-3">
                             <input type="password" class="form-control" id="confirmPasswd" name="confirmPasswd" placeholder="new_password" autocomplete="new-password">
                             <label for="confirmPasswd">确认新密码</label>
                             <div class="form-text">需要大写、小写字母和数字。长度不少于8个字符。</div>
                         </div>
-                    </div>
-                    <div class="card-footer text-body-secondary">
-                        <button type="submit" name="type" value="changePasswd" class="btn btn-primary">保存</button>
+                            <button type="submit" name="type" value="changePasswd" class="btn btn-outline-success float-end mb-3">保存</button>
                     </div>
                 </form>
             </div>
@@ -57,15 +55,13 @@
                             </div>
                             <button type="button" class="btn btn-outline-secondary" onclick="onClickGenUUID(this)" data-output="uid">∞</button>
                         </div>
-                        <div class="form-text text-danger mb-3">用户 UUID 用于直接获取订阅数据，请妥善保管好用户 UUID！</div>
+                        <div class="form-text text-danger mb-3">用户 UUID 用于直接获取订阅数据，请妥善保管好用户 UUID！修改后需要重新导入订阅。</div>
 
-                        <div class="form-floating">
+                        <div class="form-floating mb-3">
                             <input type="text" class="form-control" id="username" name="username" placeholder="username" value="{{ username }}">
                             <label for="username">用户名</label>
                         </div>
-                    </div>
-                    <div class="card-footer text-body-secondary align-item-right">
-                        <button type="submit" name="type" value="changeUserInfo" class="btn btn-primary">保存</button>
+                        <button type="submit" name="type" value="changeUserInfo" class="btn btn-outline-success float-end mb-3">保存</button>
                     </div>
                 </form>
             </div>
@@ -74,14 +70,12 @@
                 <form method="post">
                     <div class="card-body">
                         <h5 class="card-title">其他设置</h5>
-                        <div class="form-floating">
+                        <div class="form-floating mb-3">
                             <input type="text" class="form-control" id="customConfigUrl" name="customConfigUrl" placeholder="https://"
                                 {% if customConfigUrl is not null %}value="{{ customConfigUrl }}" {% endif %}>
                             <label for="customConfigUrl">自定义远程配置</label>
                         </div>
-                    </div>
-                    <div class="card-footer text-body-secondary align-item-right">
-                        <button type="submit" name="type" value="changeCustomConfig" class="btn btn-primary">保存</button>
+                        <button type="submit" name="type" value="changeCustomConfig" class="btn btn-outline-success float-end mb-3">保存</button>
                     </div>
                 </form>
             </div>

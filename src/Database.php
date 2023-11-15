@@ -145,7 +145,7 @@ class Database
      */
     public function insertNewRow(string $table, array $insertArray): void
     {
-        $wrappedKeys = array_combine(array_map(function($key) {
+        $wrappedKeys = array_combine(array_map(function ($key) {
             return "`$key`";
         }, array_keys($insertArray)), $insertArray);
         $queryRow = implode(', ', array_keys($wrappedKeys));
@@ -292,5 +292,21 @@ class Database
                 throw new \Exception("服务器内部错误！");
             }
         }
+    }
+
+    /**
+     * 检查内容是否有重复
+     * @param string $table 数据库表名
+     * @param string $colName 列名
+     * @param string $checkString 需检查的内容
+     * @return bool 若查出来了则 True，没查出来则 False
+     */
+    public function checkDuplicate(string $table, string $colName, string $checkString): bool
+    {
+        $checkResult = $this->getRowbyName($table, $colName, array($colName => $checkString));
+        if (empty($checkResult))
+            return false;
+        else
+            return true;
     }
 }

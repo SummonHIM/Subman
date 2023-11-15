@@ -61,15 +61,15 @@ class AdminGroup extends Administrator
             return;
         }
 
-        $newGid = empty($_POST['newGid']) ? $this->generateUUID() : $_POST['newGid'];
-        if (!preg_match($this->uuidPattern, $newGid) || !preg_match($this->uuidPattern, $_POST['gid'])) {
+        $newGid = empty($_POST['newGid']) ? $this->uuid->generateUUID() : $_POST['newGid'];
+        if (!$this->uuid->checkUUID($newGid) || !$this->uuid->checkUUID($_POST['gid'])) {
             $this->renderGroup("输入的 UUID 不是有效的 UUID 格式。");
             http_response_code(405);
             return;
         }
 
         if ($_POST['gid'] != $newGid) {
-            if ($this->checkDuplicate('groups', 'gid', $newGid)) {
+            if ($this->db->checkDuplicate('groups', 'gid', $newGid)) {
                 $this->renderGroup("分组 UUID 与其他分组重复。");
                 http_response_code(405);
                 return;
@@ -131,7 +131,7 @@ class AdminGroup extends Administrator
             return;
         }
 
-        if (!preg_match($this->uuidPattern, $_POST['gid'])) {
+        if (!$this->uuid->checkUUID($_POST['gid'])) {
             $this->renderGroup("输入的 UUID 不是有效的 UUID 格式。");
             http_response_code(405);
             return;
@@ -165,15 +165,15 @@ class AdminGroup extends Administrator
             return;
         }
 
-        $newSid = empty($_POST['newSid']) ? $this->generateUUID() : $_POST['newSid'];
-        if (!preg_match($this->uuidPattern, $newSid) || !preg_match($this->uuidPattern, $_POST['sid']) || !preg_match($this->uuidPattern, $_POST['gid'])) {
+        $newSid = empty($_POST['newSid']) ? $this->uuid->generateUUID() : $_POST['newSid'];
+        if (!$this->uuid->checkUUID($newSid) || !$this->uuid->checkUUID($_POST['sid']) || !$this->uuid->checkUUID($_POST['gid'])) {
             $this->renderGroup("输入的 UUID 不是有效的 UUID 格式。");
             http_response_code(405);
             return;
         }
 
         if ($_POST['sid'] != $_POST['newSid']) {
-            if ($this->checkDuplicate('group_subscribes', 'sid', $_POST['newSid'])) {
+            if ($this->db->checkDuplicate('group_subscribes', 'sid', $_POST['newSid'])) {
                 $this->renderGroup("订阅 UUID 与其他分组重复。");
                 http_response_code(405);
                 return;
@@ -244,7 +244,7 @@ class AdminGroup extends Administrator
             return;
         }
 
-        if (!preg_match($this->uuidPattern, $_POST['sid']) || !preg_match($this->uuidPattern, $_POST['gid'])) {
+        if (!$this->uuid->checkUUID($_POST['sid']) || !$this->uuid->checkUUID($_POST['gid'])) {
             $this->renderGroup("输入的 UUID 不是有效的 UUID 格式。");
             http_response_code(405);
             return;
@@ -279,14 +279,14 @@ class AdminGroup extends Administrator
             return;
         }
 
-        $sid = empty($_POST['sid']) ? $this->generateUUID() : $_POST['sid'];
-        if (!preg_match($this->uuidPattern, $sid) || !preg_match($this->uuidPattern, $_POST['gid'])) {
+        $sid = empty($_POST['sid']) ? $this->uuid->generateUUID() : $_POST['sid'];
+        if (!$this->uuid->checkUUID($sid) || !$this->uuid->checkUUID($_POST['gid'])) {
             $this->renderGroup("输入的 UUID 不是有效的 UUID 格式。");
             http_response_code(405);
             return;
         }
 
-        if ($this->checkDuplicate('group_subscribes', 'sid', $sid)) {
+        if ($this->db->checkDuplicate('group_subscribes', 'sid', $sid)) {
             $this->renderGroup("订阅 UUID 与其他分组重复。");
             http_response_code(405);
             return;
@@ -355,7 +355,7 @@ class AdminGroup extends Administrator
             return;
         }
 
-        if (!preg_match($this->uuidPattern, $_POST['gsid']) || !preg_match($this->uuidPattern, $_POST['gid'])) {
+        if (!$this->uuid->checkUUID($_POST['gsid']) || !$this->uuid->checkUUID($_POST['gid'])) {
             $this->renderGroup("输入的 UUID 不是有效的 UUID 格式。");
             http_response_code(405);
             return;
@@ -408,7 +408,7 @@ class AdminGroup extends Administrator
             return;
         }
 
-        if (!preg_match($this->uuidPattern, $_POST['gsid']) || !preg_match($this->uuidPattern, $_POST['gid'])) {
+        if (!$this->uuid->checkUUID($_POST['gsid']) || !$this->uuid->checkUUID($_POST['gid'])) {
             $this->renderGroup("输入的 UUID 不是有效的 UUID 格式。");
             http_response_code(405);
             return;
@@ -443,14 +443,14 @@ class AdminGroup extends Administrator
             return;
         }
 
-        $gsid = empty($_POST['gsid']) ? $this->generateUUID() : $_POST['gsid'];
-        if (!preg_match($this->uuidPattern, $gsid) || !preg_match($this->uuidPattern, $_POST['gid'])) {
+        $gsid = empty($_POST['gsid']) ? $this->uuid->generateUUID() : $_POST['gsid'];
+        if (!$this->uuid->checkUUID($gsid) || !$this->uuid->checkUUID($_POST['gid'])) {
             $this->renderGroup("输入的 UUID 不是有效的 UUID 格式。");
             http_response_code(405);
             return;
         }
 
-        if ($this->checkDuplicate('group_share', 'gsid', $gsid)) {
+        if ($this->db->checkDuplicate('group_share', 'gsid', $gsid)) {
             $this->renderGroup("订阅 UUID 与其他分组重复。");
             http_response_code(405);
             return;
@@ -501,7 +501,7 @@ class AdminGroup extends Administrator
             return;
         }
 
-        if (!preg_match($this->uuidPattern, $_POST['uid']) || !preg_match($this->uuidPattern, $_POST['gid'])) {
+        if (!$this->uuid->checkUUID($_POST['uid']) || !$this->uuid->checkUUID($_POST['gid'])) {
             $this->renderGroup("输入的 UUID 不是有效的 UUID 格式。");
             http_response_code(405);
             return;
@@ -511,7 +511,7 @@ class AdminGroup extends Administrator
 
         try {
             $this->db->updateRow(
-                "user_subscribes",
+                "user_groups",
                 array('expire' => $expire),
                 array(
                     'uid' => $_POST['uid'],
@@ -539,7 +539,7 @@ class AdminGroup extends Administrator
             return;
         }
 
-        if (!preg_match($this->uuidPattern, $_POST['uid']) || !preg_match($this->uuidPattern, $_POST['gid'])) {
+        if (!$this->uuid->checkUUID($_POST['uid']) || !$this->uuid->checkUUID($_POST['gid'])) {
             $this->renderGroup("输入的 UUID 不是有效的 UUID 格式。");
             http_response_code(405);
             return;
@@ -547,7 +547,7 @@ class AdminGroup extends Administrator
 
         try {
             $this->db->deleteRow(
-                "user_subscribes",
+                "user_groups",
                 array(
                     'uid' => $_POST['uid'],
                     'gid' => $_POST['gid']
@@ -574,7 +574,7 @@ class AdminGroup extends Administrator
             return;
         }
 
-        if (!preg_match($this->uuidPattern, $_POST['uid']) || !preg_match($this->uuidPattern, $_POST['gid'])) {
+        if (!$this->uuid->checkUUID($_POST['uid']) || !$this->uuid->checkUUID($_POST['gid'])) {
             $this->renderGroup("输入的 UUID 不是有效的 UUID 格式。");
             http_response_code(405);
             return;
@@ -584,7 +584,7 @@ class AdminGroup extends Administrator
 
         try {
             $this->db->insertNewRow(
-                "user_subscribes",
+                "user_groups",
                 array(
                     'uid' => $_POST['uid'],
                     'gid' => $_POST['gid'],

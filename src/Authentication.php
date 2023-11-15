@@ -9,11 +9,13 @@ class Authentication
 {
     public $cfg;
     public $db;
+    public $uuid;
 
     public function __construct()
     {
         $this->cfg = new Config();
         $this->db = new Database();
+        $this->uuid = new UUID();
     }
 
     /**
@@ -39,7 +41,7 @@ class Authentication
                 }
             } else {
                 $execStatus = "Failed";
-                $retMsg = "用户名或密码错误！"; //Username not exist
+                $retMsg = "用户名或密码错误！";
             }
         } catch (\PDOException $e) {
             $execStatus = "Failed";
@@ -63,14 +65,73 @@ class Authentication
         return $ret;
     }
 
+    private function checkSession(string $sessionID): void
+    {
+        $data = $this->db->getRowbyName("user_sessions", "uid, expire", array('session_id' => $sessionID));
+
+        if (date('Y-m-d H:i:s') < $data['expire']) {
+            $newExpire = strtotime('+1 month', time());
+
+            $this->db->updateRow(
+                "user_sessions",
+                array('expire' => date("Y-m-d H:i:s", $newExpire)),
+                array(
+                    'session_id' => $sessionID,
+                    'uid' => $data['uid']
+                )
+            );
+
+            setcookie("sm_session", $sessionID, $newExpire, "/");
+
+            $_SESSION['uid'] = $data['uid'];
+            $_SESSION['username'] = $this->db->getRowbyName("users", "username", array("uid" => $data['uid']))['username'];
+        } else {
+            $this->db->deleteRow(
+                "user_sessions",
+                array(
+                    'session_id' => $sessionID,
+                    'uid' => $data['uid']
+                )
+            );
+            setcookie("sm_session", "", time() - 3600, "/");
+        }
+    }
+
+    private function createSession(string $uid): void
+    {
+        if (empty($uid) || !$this->uuid->checkUUID($uid))
+            return;
+
+        $newSessionID = $this->uuid->generateUUID();
+        $newExpire = strtotime('+1 month', time());
+
+        try {
+            $this->db->insertNewRow(
+                "user_sessions",
+                array(
+                    'session_id' => $newSessionID,
+                    'uid' => $uid,
+                    'expire' => date("Y-m-d H:i:s", $newExpire),
+                ),
+            );
+
+            setcookie("sm_session", $newSessionID, $newExpire, "/");
+        } catch (\PDOException) {
+            return;
+        }
+    }
+
     /**
      * 渲染登录页面
      * @param string $loginResult 登录结果，默认 "Success"。twig 逻辑中 "Success" 会隐藏错误提示框。
      */
     public static function onRenderLogin(string $loginResult = "Success"): void
     {
-        $cfg = new Config();
-        $baseUrl = $cfg->getValue('WebSite', 'BaseUrl');
+        $self = new self();
+        $baseUrl = $self->cfg->getValue('WebSite', 'BaseUrl');
+
+        if (!empty($_COOKIE['sm_session']))
+            $self->checkSession($_COOKIE['sm_session']);
 
         if (isset($_SESSION['username']) || isset($_SESSION['uid'])) {
             header("Location: " . $baseUrl . "/");
@@ -80,7 +141,7 @@ class Authentication
             $template = $twig->load("login.twig");
             echo $template->render([
                 "loginResult" => $loginResult,
-                'baseUrl' => $cfg->getValue('WebSite', 'BaseUrl')
+                'baseUrl' => $baseUrl
             ]);
         }
     }
@@ -93,16 +154,22 @@ class Authentication
         $self = new self();
         $baseUrl = $self->cfg->getValue('WebSite', 'BaseUrl');
 
-        if (isset($_POST['formLoginUsername']) && isset($_POST['formLoginPasswd'])) {
-            $loginResult = $self->login($_POST['formLoginUsername'], $_POST['formLoginPasswd']);
-            if ($loginResult['message'] == "Success") {
-                $_SESSION['username'] = $loginResult['username'];
-                $_SESSION['uid'] = $loginResult['uid'];
-                header("Location: " . $baseUrl . "/");
-            } else {
-                $self->onRenderLogin($loginResult['message']);
-            }
+        if (!isset($_POST['formLoginUsername']) && !isset($_POST['formLoginPasswd']))
+            return;
+
+        $loginResult = $self->login($_POST['formLoginUsername'], $_POST['formLoginPasswd']);
+        if ($loginResult['message'] == "Success") {
+            $_SESSION['username'] = $loginResult['username'];
+            $_SESSION['uid'] = $loginResult['uid'];
+        } else {
+            $self->onRenderLogin($loginResult['message']);
+            return;
         }
+
+        if (isset($_POST['keepLogin']))
+            $self->createSession($loginResult['uid']);
+
+        header("Location: " . $baseUrl . "/");
     }
 
     /**
@@ -110,9 +177,20 @@ class Authentication
      */
     public static function onPostLogout(): void
     {
-        $cfg = new Config();
-        $baseUrl = $cfg->getValue('WebSite', 'BaseUrl');
+        $self = new self();
+        $baseUrl = $self->cfg->getValue('WebSite', 'BaseUrl');
+
+        setcookie("sm_session", "", time() - 3600, "/");
+
         session_destroy();
+
+        $self->db->deleteRow(
+            "user_sessions",
+            array(
+                'session_id' => $_COOKIE['sm_session'],
+            )
+        );
+
         header("Location: " . $baseUrl . "/");
     }
 }
