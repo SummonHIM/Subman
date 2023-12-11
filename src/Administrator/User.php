@@ -1,8 +1,8 @@
 <?php
 
-namespace Subman;
+namespace Subman\Administrator;
 
-class AdminUser extends Administrator
+class User extends Administrator
 {
     /**
      * 处理 Post 操作
@@ -17,14 +17,8 @@ class AdminUser extends Administrator
             case "deleteUser":
                 $self->handleDeleteUser();
                 break;
-            case "updateCurrentSub":
-                $self->handleUpdateCurrentSub();
-                break;
-            case "deleteCurrentSub":
-                $self->handleDeleteCurrentSub();
-                break;
-            case "createNewSub":
-                $self->handleCreateNewSub();
+            case "saveUserSubs":
+                $self->saveUserSubs();
                 break;
             default:
                 header("Location: " . $self->cfg->getValue('WebSite', 'BaseUrl') . "/");
@@ -102,6 +96,12 @@ class AdminUser extends Administrator
                 $updateRow,
                 array('uid' => $_POST['uid'])
             );
+
+            if ($_POST['uid'] == $_SESSION['uid']) {
+                $_SESSION['username'] = $_POST['newUsername'];
+                $_SESSION['uid'] = $newUid;
+            }
+
             if ($_POST['uid'] != $newUid)
                 $this->renderMain("Success");
             else
@@ -150,113 +150,128 @@ class AdminUser extends Administrator
     }
 
     /**
-     * 处理更新用户现有分组
+     * 处理分组用户Post信息是否符合规范
      */
-    private function handleUpdateCurrentSub(): void
+    private function validateUserSub(string $uid, array $data): void
     {
-        if (empty($_POST['uid']) || empty($_POST['gid'])) {
-            $this->renderUser("用户 UUID 和分组 UUID 不得为空。");
-            http_response_code(405);
-            return;
-        }
+        if (empty($data['gid']) || empty($data['newGid']) || $data['newGid'] == '添加新分组' || empty($uid))
+            throw new \Exception("请选择一个分组。");
 
-        if (!$this->uuid->checkUUID($_POST['uid']) || !$this->uuid->checkUUID($_POST['gid'])) {
-            $this->renderUser("输入的 UUID 不是有效的 UUID 格式。");
-            http_response_code(405);
-            return;
-        }
+        if (!$this->uuid->checkUUID($data['gid']) || !$this->uuid->checkUUID($data['newGid']) || !$this->uuid->checkUUID($uid))
+            throw new \Exception("输入的 UUID 不是有效的 UUID 格式。");
+    }
 
-        $expire = !empty($_POST['expire']) ? date("Y-m-d H:i:s", strtotime(str_replace("T", " ", $_POST['expire']))) : date("Y-m-d H:i:s", time());
+    /**
+     * 更新现有分组用户
+     */
+    private function updateUserSub(string $uid, array $data)
+    {
+        $this->validateUserSub($uid, $data);
+        $data['expire'] = empty($data['expire']) ? date("Y-m-d H:i:s", time()) : date("Y-m-d H:i:s", strtotime(str_replace("T", " ", $data['expire'])));
 
         try {
             $this->db->updateRow(
                 "user_groups",
-                array('expire' => $expire),
                 array(
-                    'uid' => $_POST['uid'],
-                    'gid' => $_POST['gid']
+                    'gid' => $data['newGid'],
+                    'expire' => $data['expire']
+                ),
+                array(
+                    'uid' => $uid,
+                    'gid' => $data['gid']
                 )
             );
-            $this->renderUser("Success");
         } catch (\PDOException $e) {
             if ($this->cfg->getValue('WebSite', 'Debug')) {
-                $this->renderUser($e->getMessage());
+                throw new \Exception($e->getMessage());
             } else {
-                $this->renderUser("服务器内部错误！保存失败。");
+                throw new \Exception("服务器内部错误！保存失败。");
             }
         }
     }
 
     /**
-     * 处理删除用户现有分组
+     * 处理删除某分组用户
      */
-    private function handleDeleteCurrentSub(): void
+    private function deleteUserSub(string $uid, array $data)
     {
-        if (empty($_POST['uid']) || empty($_POST['gid'])) {
-            $this->renderUser("用户 UUID 和分组 UUID 不得为空。");
-            http_response_code(405);
-            return;
-        }
-
-        if (!$this->uuid->checkUUID($_POST['uid']) || !$this->uuid->checkUUID($_POST['gid'])) {
-            $this->renderUser("输入的 UUID 不是有效的 UUID 格式。");
-            http_response_code(405);
-            return;
-        }
-
         try {
             $this->db->deleteRow(
                 "user_groups",
                 array(
-                    'uid' => $_POST['uid'],
-                    'gid' => $_POST['gid']
+                    'uid' => $uid,
+                    'gid' => $data['gid']
                 )
             );
-            $this->renderUser("分组已删除。");
         } catch (\PDOException $e) {
             if ($this->cfg->getValue('WebSite', 'Debug')) {
-                $this->renderUser($e->getMessage());
+                throw new \Exception($e->getMessage());
             } else {
-                $this->renderUser("服务器内部错误！保存失败。");
+                throw new \Exception("服务器内部错误！保存失败。");
             }
         }
     }
 
     /**
-     * 处理添加新分组
+     * 处理添加新分组用户
      */
-    private function handleCreateNewSub(): void
+    private function createNewUserSub(string $uid, array $data)
     {
-        if (empty($_POST['uid']) || empty($_POST['gid'])) {
-            $this->renderUser("用户 UUID 和分组 UUID 不得为空。");
-            http_response_code(405);
-            return;
-        }
-
-        if (!$this->uuid->checkUUID($_POST['uid']) || !$this->uuid->checkUUID($_POST['gid'])) {
-            $this->renderUser("输入的 UUID 不是有效的 UUID 格式。");
-            http_response_code(405);
-            return;
-        }
-
-        $expire = !empty($_POST['expire']) ? date("Y-m-d H:i:s", strtotime(str_replace("T", " ", $_POST['expire']))) : date("Y-m-d H:i:s", time());
+        $data['gid'] = $data['newGid'];
+        $this->validateUserSub($uid, $data);
+        $data['expire'] = empty($data['expire']) ? date("Y-m-d H:i:s", time()) : date("Y-m-d H:i:s", strtotime(str_replace("T", " ", $data['expire'])));
 
         try {
             $this->db->insertNewRow(
                 "user_groups",
                 array(
-                    'uid' => $_POST['uid'],
-                    'gid' => $_POST['gid'],
-                    'expire' => $expire,
+                    'uid' => $uid,
+                    'gid' => $data['newGid'],
+                    'expire' => $data['expire'],
                 ),
             );
-            $this->renderUser("Success");
         } catch (\PDOException $e) {
             if ($this->cfg->getValue('WebSite', 'Debug')) {
-                $this->renderUser($e->getMessage());
+                throw new \Exception($e->getMessage());
             } else {
-                $this->renderUser("服务器内部错误！保存失败。");
+                throw new \Exception("服务器内部错误！保存失败。");
             }
         }
+    }
+
+    /**
+     * 处理分组用户逻辑
+     */
+    private function saveUserSubs(): void
+    {
+        foreach ($_POST['data'] as $index => $data) {
+            if (isset($data['newEmpty'])) {
+                try {
+                    $this->createNewUserSub($_POST['uid'], $data);
+                } catch (\Exception $e) {
+                    $this->renderUser("前 " . $index - 1 . " 行数据已保存。创建第 " . $index . " 个新用户分组失败：" . $e->getMessage());
+                    http_response_code(405);
+                    return;
+                }
+            } else if (isset($data['delete'])) {
+                try {
+                    $this->deleteUserSub($_POST['uid'], $data);
+                } catch (\Exception $e) {
+                    $this->renderUser("前 " . $index - 1 . " 行数据已保存。删除名为 " . $data['name'] . " 的用户分组失败：" . $e->getMessage());
+                    http_response_code(405);
+                    return;
+                }
+            } else {
+                try {
+                    $this->updateUserSub($_POST['uid'], $data);
+                } catch (\Exception $e) {
+                    $this->renderUser("前 " . $index - 1 . " 行数据已保存。更新名为 " . $data['name'] . " 的用户分组失败：" . $e->getMessage());
+                    http_response_code(405);
+                    return;
+                }
+            }
+        }
+
+        $this->renderUser("Success");
     }
 }

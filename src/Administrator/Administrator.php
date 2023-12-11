@@ -1,6 +1,6 @@
 <?php
 
-namespace Subman;
+namespace Subman\Administrator;
 
 use Subman\UUID;
 use Subman\Config;
@@ -138,6 +138,7 @@ class Administrator
             'username' => $_SESSION['username'],
             'isAdmin' => $self->isAdmin,
             'type' => "users",
+            'navRet' => true,
             'user' => $user,
             'userSubs' => $userSubs,
             'groupNames' => $groupNames,
@@ -171,6 +172,7 @@ class Administrator
             'username' => $_SESSION['username'],
             'isAdmin' => $self->isAdmin,
             'type' => "groups",
+            'navRet' => true,
             'group' => $group,
             'subscribes' => $subscribes,
             'groupShare' => $groupShare,

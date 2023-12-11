@@ -2,6 +2,7 @@
 
 namespace Subman;
 
+use Subman\Administrator;
 use Subman\Config;
 
 class Router
@@ -23,13 +24,13 @@ class Router
                     UserConfig::onPost();
                     break;
                 case $baseUrl . '/admin':
-                    Administrator::onPost();
+                    Administrator\Administrator::onPost();
                     break;
                 case $baseUrl . '/admin/user':
-                    AdminUser::onUserPost();
+                    Administrator\User::onUserPost();
                     break;
                 case $baseUrl . '/admin/group':
-                    AdminGroup::onGroupPost();
+                    Administrator\Group::onGroupPost();
                     break;
                 case $baseUrl . '/api/logout':
                     Authentication::onPostLogout();
@@ -48,13 +49,13 @@ class Router
                     Authentication::onRenderLogin();
                     break;
                 case $baseUrl . '/admin':
-                    Administrator::renderMain();
+                    Administrator\Administrator::renderMain();
                     break;
                 case $baseUrl . '/admin/user':
-                    Administrator::renderUser();
+                    Administrator\Administrator::renderUser();
                     break;
                 case $baseUrl . '/admin/group':
-                    Administrator::renderGroup();
+                    Administrator\Administrator::renderGroup();
                     break;
                 case $baseUrl . '/userconfig':
                     UserConfig::renderUserConfig();

@@ -1,36 +1,39 @@
 {% extends "base.twig" %}
-{% block title %}登录{% endblock %}
+{% block title %}
+登录
+{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-center align-items-center" style="height: 100vh">
-    <!-- Begin login card -->
-    <div class="card" style="width: 60vh">
-        <div class="card-body">
-            <h5 class="card-title">登录</h5>
-            {% if loginResult != "Success" %}
-            <div class="alert alert-danger" role="alert">
-                {{ loginResult }}
+    <div
+        class="d-flex justify-content-center align-items-center" style="height: 100vh">
+        <!-- Begin login card -->
+        <div class="card" style="width: 60vh">
+            <div class="card-body">
+                <h5 class="card-title">登录</h5>
+                {% if loginResult != "Success" %}
+                    <div class="alert alert-danger" role="alert">
+                        {{ loginResult }}
+                    </div>
+                {% endif %}
+                <form method="post">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="formLoginUsername" name="formLoginUsername" placeholder="Username" required>
+                        <label for="formLoginUsername">用户名</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="password" class="form-control" id="formLoginPasswd" name="formLoginPasswd" placeholder="Password" required>
+                        <label for="formLoginPasswd">密码</label>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" name="keepLogin" id="flexkeepLogin">
+                        <label class="form-check-label" for="flexkeepLogin">
+                            保持登录
+                        </label>
+                    </div>
+                    <button type="submit" class="btn btn-outline-primary float-end">登录</button>
+                </form>
             </div>
-            {% endif %}
-            <form method="post">
-                <div class="form-floating mb-3">
-                    <input type="text" class="form-control" id="formLoginUsername" name="formLoginUsername" placeholder="Username" required>
-                    <label for="formLoginUsername">用户名</label>
-                </div>
-                <div class="form-floating mb-3">
-                    <input type="password" class="form-control" id="formLoginPasswd" name="formLoginPasswd" placeholder="Password" required>
-                    <label for="formLoginPasswd">密码</label>
-                </div>
-                <div class="form-check mb-3">
-                    <input class="form-check-input" type="checkbox" name="keepLogin" id="flexkeepLogin">
-                    <label class="form-check-label" for="flexkeepLogin">
-                        保持登录
-                    </label>
-                </div>
-                <button type="submit" class="btn btn-outline-primary float-end">登录</button>
-            </form>
         </div>
+        <!-- End login card -->
     </div>
-    <!-- End login card -->
-</div>
 {% endblock %}

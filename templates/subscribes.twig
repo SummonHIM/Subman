@@ -1,49 +1,59 @@
 {% extends "base.twig" %}
-{% block title %}{{ username }}的订阅{% endblock %}
+{% block title %}
+    {{ username }}
+    的订阅
+{% endblock %}
 
 {% block content %}
-{% include 'component/navbar.twig' %}
+    {% include 'component/navbar.twig' %}
 
-<!-- Begin subscription list -->
-<div class="container mt-5">
-    <div class="row">
-        <div class="col-md-3 mb-3">
-            <ul class="nav nav-pills flex-column">
-                {% for item in renderGroupSubs %}
-                <li class="nav-item d-grid">
-                    <button class="nav-link {% if loop.first %}active{% endif %}" id="navSubListTab-{{ loop.index }}" data-bs-toggle="pill"
-                        data-bs-target="#navSubList-{{ loop.index }}" type="button" role="tab" aria-controls="navSubList-{{ loop.index }}"
-                        aria-selected="{% if loop.first %}true{% else %}false{% endif %}">{{ item.name }}</button>
-                </li>
-                {% endfor %}
-            </ul>
-        </div>
-        <div class="col-md-9">
-            <div class="tab-content" id="navSubListContent">
-                {% for item in renderGroupSubs %}
-                <div class="tab-pane fade {% if loop.first %}show active{% endif %}" id="navSubList-{{ loop.index }}" role="tabpanel"
-                    aria-labelledby="navSubListTab-{{ loop.index }}" tabindex="0">
-                    {% if "now" | date("Y-m-d H:i:s") < item.expire | date("Y-m-d H:i:s") %}
-                    <div class="mb-md-4 d-flex justify-content-center justify-content-md-between align-items-end">
-                        <h1 class="d-none d-md-block">{{ item.name }}</h1>
-                        <p>过期时间：{{ item.expire | date("Y-m-d H:i:s") }}</p>
-                    </div>
-                    <div class="accordion mb-3" id="accordion-{{ loop.index }}">
-                        {% include 'subscribes/collapseSubscriptions.twig' %}
-                        {% include 'subscribes/collapseAccounts.twig' %}
-                        {% include 'subscribes/collapseShare.twig' %}
-                    </div>
+    <!-- Begin subscription list -->
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-3 mb-3">
+                <ul class="nav nav-pills flex-column">
+                    {% for item in renderGroupSubs|default([0]) %}
+                        <li class="nav-item d-grid">
+                            <button class="nav-link {% if loop.first %}active{% endif %}" id="navSubListTab-{{ loop.index }}" data-bs-toggle="pill" data-bs-target="#navSubList-{{ loop.index }}" type="button" role="tab" aria-controls="navSubList-{{ loop.index }}" aria-selected="{% if loop.first %}true{% else %}false{% endif %}">
+                                {% if renderGroupSubs is empty %}
+                                    暂无分组
+                                {% else %}
+                                    {{ item.name }}
+                                {% endif %}
+                            </button>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="col-md-9">
+                <div class="tab-content" id="navSubListContent">
+                    {% for item in renderGroupSubs %}
+                        <div class="tab-pane fade {% if loop.first %}show active{% endif %}" id="navSubList-{{ loop.index }}" role="tabpanel" aria-labelledby="navSubListTab-{{ loop.index }}" tabindex="0">
+                            {% if "now" | date("Y-m-d H:i:s") < item.expire | date("Y-m-d H:i:s") %}
+                                <div class="mb-md-4 d-flex justify-content-center justify-content-md-between align-items-end">
+                                    <h1 class="d-none d-md-block">{{ item.name }}</h1>
+                                    <p>过期时间：{{ item.expire | date("Y-m-d H:i:s") }}</p>
+                                </div>
+                                <div class="accordion mb-3" id="accordion-{{ loop.index }}">
+                                    {% include 'subscribes/collapseSubscriptions.twig' %}
+                                    {% include 'subscribes/collapseAccounts.twig' %}
+                                    {% include 'subscribes/collapseShare.twig' %}
+                                </div>
+                            {% else %}
+                                <div class="alert alert-danger" role="alert">
+                                    该订阅已于
+                                    {{ item.expire }}
+                                    过期。
+                                </div>
+                            {% endif %}
+                        </div>
                     {% else %}
-                    <div class="alert alert-danger" role="alert">
-                        该订阅已于 {{ item.expire }} 过期。
-                    </div>
-                    {% endif %}
+                        <div class="alert alert-warning" role="alert">您目前没有可用的分组。请联系管理员获取一个。</div>
+                    {% endfor %}
                 </div>
-                {% endfor %}
             </div>
         </div>
     </div>
-</div>
-<!-- End subscription list -->
+    <!-- End subscription list -->
 
 {% endblock %}
