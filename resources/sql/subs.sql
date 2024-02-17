@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS `group_subscribes` (
   `name` varchar(25) NOT NULL,
   `url` varchar(255) NOT NULL,
   `converter` tinyint(1) NOT NULL DEFAULT 0,
-  `converter_options` varchar(255) DEFAULT 'emoji=true&udp=true&new_name=true',
+  `converter_options` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`sid`) USING BTREE,
   KEY `gid` (`gid`) USING BTREE,
   CONSTRAINT `group_subscribes_ibfk_1` FOREIGN KEY (`gid`) REFERENCES `groups` (`gid`) ON DELETE CASCADE ON UPDATE CASCADE,
