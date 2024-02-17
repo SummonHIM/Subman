@@ -83,7 +83,8 @@ function onClickCreateNewTbody(self) {
     var labels = lastRow.getElementsByTagName("input");
     for (var i = 0; i < labels.length; i++) {
         if (regex.test(labels[i].id)) {
-            labels[i].disabled = true;
+            labels[i].disabled = false;
+            labels[i].setAttribute("onclick", "onClickDeleteNewTbody(this)");
         }
     }
 
@@ -106,6 +107,39 @@ function onClickCreateNewTbody(self) {
     // 在表格末尾添加新行
     tbody.appendChild(lastRow);
     handleSelectChange();
+}
+
+function onClickDeleteNewTbody(self) {
+    self.closest("tr").remove();
+}
+
+function copyTextToClipboard(self) {
+    var text = document.getElementById(self.getAttribute("data-copyid"));
+
+    text.select();
+    text.setSelectionRange(0, 99999); // 兼容移动设备
+
+    if (self.getAttribute("data-orgsub") === "true") {
+        navigator.clipboard.writeText(text.value + "&original=true");
+    } else {
+        navigator.clipboard.writeText(text.value);
+    }
+    
+}
+
+function togglePasswordVisibility(self) {
+    var passwordInput = document.getElementById(self.getAttribute("data-passid"));
+    if (passwordInput.type === "password") {
+        passwordInput.type = "text";
+    } else {
+        passwordInput.type = "password";
+    }
+    var iconEye = document.getElementById(self.getAttribute("data-eyeid"));
+    if (iconEye.name === "eye-off") {
+        iconEye.name = "eye";
+    } else {
+        iconEye.name = "eye-off";
+    }
 }
 
 autoDarkMode();

@@ -8,57 +8,104 @@ use Subman\Database;
 class Subscribes
 {
     /**
+     * 检查两个 string 最后一个字符与第一个字符是否在同一Unicode区块
+     * @param string $first 第一个字符串
+     * @param string $last 第二个字符串
+     * @return bool 若相等则 true 若不相等则 false
+     */
+    function isSameUTFBlock(string $first, string $last): bool
+    {
+        // 获取字符的 Unicode 区块代码
+        $blockCodeFirst = \IntlChar::getBlockCode(ord(mb_substr($first, -1)));
+        $blockCodeEnd = \IntlChar::getBlockCode(ord(mb_substr($last, 0, 1)));
+
+        // 比较区块代码是否相同
+        if ($blockCodeFirst === $blockCodeEnd) return true;
+        else return false;
+    }
+
+    /**
      * 渲染订阅页面
      */
-    public static function renderSubscribes()
+    public static function renderSubscribe()
     {
+        $self = new self();
         $cfg = new Config();
 
-        if (isset($_SESSION['username'])) {
+        if (isset($_SESSION['uid']) && isset($_SESSION['username']) && isset($_GET['gid'])) {
             $db = new Database;
             $loader = new \Twig\Loader\FilesystemLoader("templates");
             $twig = new \Twig\Environment($loader);
 
             // 获取用户信息
             $users = $db->getRowbyName("users", 'isadmin, custom_config', array("uid" => $_SESSION['uid']));
+            // 获取过期时间
+            $expire = $db->getRowbyName("user_groups", 'expire', array("uid" => $_SESSION['uid'], "gid" => $_GET['gid']))['expire'];
+            // 初始化 group
+            $group = [];
 
-            // 获取并循环 userSubs
-            $userSubs = $db->getRowbyName("user_groups", '*', array("uid" => $_SESSION['uid']), true);
-            $renderGroupSubs = [];
-            foreach ($userSubs as $i) {
-                // 根据 userSubs 中的 gid 查找订阅组信息
-                $groups = $db->getRowbyName("groups", '*', array("gid" => $i['gid']));
-                // 检查该订阅是否过期
-                if (date('Y-m-d H:i:s') < $i['expire']) {
-                    // 若订阅仍未过期，则将过期时间，订阅地址以及共享账号添加至 group 数组内
-                    $groups["expire"] = $i['expire'];
-                    $groups["subscribes"] = $db->getRowbyNameOrder("group_subscribes", 'sid, gid, name, converter, target', array("gid" => $i['gid']), array("orderlist" => "ASC"), true);
-                    $groups["share"] = $db->getRowbyName("group_share", 'name, account, password, manage', array("gid" => $i['gid']), true);
-                } else {
-                    // 若订阅过期了，则删除部分键值，只保留部分关键信息。
-                    unset($groups['sub_name']);
-                    unset($groups['sub_hp']);
-                    unset($groups['sub_account']);
-                    unset($groups['sub_password']);
-                    unset($groups['sub_aff']);
-                    $groups["expire"] = $i['expire'];
+            // 检查该订阅是否过期
+            if (date('Y-m-d H:i:s') < $expire) {
+                // 根据 gid 查找分组信息
+                $group = $db->getRowbyName("groups", '*', array("gid" => $_GET['gid']));
+                $group["subscribes"] = $db->getRowbyNameOrder("group_subscribes", 'sid, gid, name, converter', array("gid" => $_GET['gid']), array("orderlist" => "ASC"), true);
+                foreach ($group["subscribes"] as &$subscribe) {
+                    $subscribe["suggestion_name"] = $group["name"] . ($self->isSameUTFBlock($group["name"], $subscribe["name"]) ? '' : ' ') . $subscribe["name"];
                 }
-                $renderGroupSubs[] = $groups;
+                $group["share"] = $db->getRowbyName("group_share", 'name, account, password, manage', array("gid" => $_GET['gid']), true);
+                foreach ($group["share"] as &$share) {
+                    $share["suggestion_name"] = $group["name"] . ($self->isSameUTFBlock($group["name"], $share["name"]) ? '' : ' ') . $share["name"];
+                }
             }
-
-            $requestScheme = $_SERVER['REQUEST_SCHEME'] ?? "http";
 
             // 将变量传入 twig
             $twigVar = array(
-                'subApiUrl' => $requestScheme . '://' . $_SERVER['HTTP_HOST'] . $cfg->getValue('WebSite', 'BaseUrl') . '/api/subscribe',
+                'subApiUrl' => $_SERVER['REQUEST_SCHEME'] ?? "http" . '://' . $_SERVER['HTTP_HOST'] . $cfg->getValue('WebSite', 'BaseUrl') . '/api/subscribe',
                 'baseUrl' => $cfg->getValue('WebSite', 'BaseUrl'),
                 'username' => $_SESSION['username'],
                 'uid' => $_SESSION['uid'],
                 'isAdmin' => $users['isadmin'],
                 'customConfig' => $users['custom_config'],
-                'renderGroupSubs' => $renderGroupSubs
+                'expire' => $expire,
+                'group' => $group
             );
             $template = $twig->load("subscribes.twig");
+            echo $template->render($twigVar);
+        } else {
+            header("Location: " . $cfg->getValue('WebSite', 'BaseUrl') . "/login");
+            exit();
+        }
+    }
+
+    /**
+     * 渲染订阅列表
+     */
+    public static function renderSubscribeLists()
+    {
+        $cfg = new Config();
+
+        if (isset($_SESSION['uid']) && isset($_SESSION['username'])) {
+            $db = new Database;
+            $loader = new \Twig\Loader\FilesystemLoader("templates");
+            $twig = new \Twig\Environment($loader);
+
+            $users = $db->getRowbyName("users", 'isadmin', array("uid" => $_SESSION['uid']));
+            $userSubs = $db->getRowbyName("user_groups", '*', array("uid" => $_SESSION['uid']), true);
+            $renderGroupSubs = [];
+            foreach ($userSubs as $i) {
+                $group = $db->getRowbyName("groups", 'gid, name', array("gid" => $i['gid']));
+                $group['expire'] = $i['expire'];
+                $renderGroupSubs[] = $group;
+            }
+
+            // 将变量传入 twig
+            $twigVar = array(
+                'baseUrl' => $cfg->getValue('WebSite', 'BaseUrl'),
+                'username' => $_SESSION['username'],
+                'isAdmin' => $users['isadmin'],
+                'renderGroupSubs' => $renderGroupSubs
+            );
+            $template = $twig->load("subscribesList.twig");
             echo $template->render($twigVar);
         } else {
             header("Location: " . $cfg->getValue('WebSite', 'BaseUrl') . "/login");
@@ -71,9 +118,10 @@ class Subscribes
      */
     public static function getSubscribesUrl()
     {
+        header('Content-Type: application/json');
+
         // 若 sub 和 user 不存在则打印错误并返回
         if (!isset($_GET['sub']) || !isset($_GET['user'])) {
-            header('Content-Type: application/json');
             http_response_code(401);
             echo json_encode(array(
                 'Status' => 'Error',
@@ -82,12 +130,12 @@ class Subscribes
             return;
         }
 
+        $self = new self();
         $db = new Database;
         $cfg = new Config;
 
         $subscribes = $db->getRowbyName("group_subscribes", "*", array('sid' => $_GET['sub']));
         if (empty($subscribes)) {
-            header('Content-Type: application/json');
             http_response_code(405);
             echo json_encode(array(
                 'Status' => 'Error',
@@ -99,7 +147,6 @@ class Subscribes
         $groups = $db->getRowbyName("groups", "name", array("gid" => $subscribes['gid']));
         $expire = $db->getRowbyName("user_groups", "expire", array('gid' => $subscribes['gid'], 'uid' => $_GET['user']))['expire'];
         if (empty($expire)) {
-            header('Content-Type: application/json');
             http_response_code(401);
             echo json_encode(array(
                 'Status' => 'Error',
@@ -108,50 +155,36 @@ class Subscribes
             return;
         }
 
-        header('Content-Type: text/plain');
-
         // 检查订阅是否已经过期
-        if (date('Y-m-d H:i:s') < $expire) {
-            // 没有过期则跳转正确的 url
-            if ($subscribes['converter'] == 1) {
-                // 生成文件名
-                $pattern1 = '/[\p{Han}\p{Katakana}\p{Hiragana}\p{Hangul}]$/u';
-                $pattern2 = '/^[\p{Han}\p{Katakana}\p{Hiragana}\p{Hangul}]/u';
-                $addSpace = (preg_match($pattern1, $groups['name']) && preg_match($pattern2, $subscribes['name'])) ? false : true;
-                $suggestionName = $groups['name'] . ($addSpace ? ' ' : '') . $subscribes['name'];
-
-                // 如果使用改版订阅，则生成 subconverter 链接
-                $url = $cfg->getValue('WebSite', 'SubConverterUrl') . "target=" . $subscribes["target"] . "&url=" . urlencode($subscribes['url']) . "&filename=" . urlencode($suggestionName) . "&" . $subscribes['options'];
-                // 如果定义了 config 参数，则将 config 参数也合并进 url 中
-                if (!empty($_GET['config']))
-                    $url .= "&config=" . urlencode($_GET["config"]);
-            } else {
-                // 否则直接返回原订阅
-                $url = $subscribes['url'];
-            }
+        if (date('Y-m-d H:i:s') > $expire) {
+            $url = $cfg->getValue('WebSite', 'SubConverterUrl') . "target=" . (isset($_GET['target']) ? $_GET['target'] : 'auto') . "&url=https%3A%2F%2Fservice.summonhim.top%2Ffiles%2Fexpire";
             echo json_encode(array(
-                'Status' => 'Success',
+                'Status' => 'Expire',
+                'Message' => 'Your subscription has expired.',
                 'Location' => $url,
             ));
             header("Location: $url");
-        } else {
-            // 过期了则返回带过期信息的配置
-            switch ($subscribes["target"]) {
-                case 'clash':
-                    echo "proxies:\n";
-                    echo "  - {name: 订阅已过期, type: ss, cipher: aes-128-gcm, server: dns.google, port: 4433, password: expire}\n";
-                    echo "proxy-groups:\n";
-                    echo "  - {name: 注意, type: select, proxies: [订阅已过期]}\n";
-                    break;
-                default:
-                    header('Content-Type: application/json');
-                    http_response_code(401);
-                    echo json_encode(array(
-                        'Status' => 'Error',
-                        'Message' => 'Your subscription has expired.',
-                    ));
-                    break;
-            }
+            return;
         }
+
+        // 没有过期则跳转正确的 url
+        if ($subscribes['converter'] == 0 || $_GET['original'] == 'true') {
+            // 否则直接返回原订阅
+            $url = $subscribes['url'];
+        } else {
+            // 生成文件名
+            $suggestionName = $groups['name'] . ($self->isSameUTFBlock($groups['name'], $subscribes['name']) ? '' : ' ') . $subscribes['name'];
+
+            // 如果使用改版订阅，则生成 subconverter 链接
+            $url = $cfg->getValue('WebSite', 'SubConverterUrl') . "target=" . (isset($_GET['target']) ? $_GET['target'] : 'auto') . "&url=" . urlencode($subscribes['url']) . "&filename=" . urlencode($suggestionName) . "&" . $subscribes['converter_options'];
+            // 如果定义了 config 参数，则将 config 参数也合并进 url 中
+            if (!empty($_GET['config']))
+                $url .= "&config=" . urlencode($_GET["config"]);
+        }
+        echo json_encode(array(
+            'Status' => 'Success',
+            'Location' => $url,
+        ));
+        header("Location: $url");
     }
 }

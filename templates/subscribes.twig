@@ -1,58 +1,70 @@
 {% extends "base.twig" %}
 {% block title %}
     {{ username }}
-    的订阅
+    的
+    {{ group.name }}
+    订阅
 {% endblock %}
 
 {% block content %}
     {% include 'component/navbar.twig' %}
 
     <!-- Begin subscription list -->
-    <div class="container mt-5">
-        <div class="row">
-            <div class="col-md-3 mb-3">
-                <ul class="nav nav-pills flex-column">
-                    {% for item in renderGroupSubs|default([0]) %}
-                        <li class="nav-item d-grid">
-                            <button class="nav-link {% if loop.first %}active{% endif %}" id="navSubListTab-{{ loop.index }}" data-bs-toggle="pill" data-bs-target="#navSubList-{{ loop.index }}" type="button" role="tab" aria-controls="navSubList-{{ loop.index }}" aria-selected="{% if loop.first %}true{% else %}false{% endif %}">
-                                {% if renderGroupSubs is empty %}
-                                    暂无分组
-                                {% else %}
-                                    {{ item.name }}
-                                {% endif %}
-                            </button>
-                        </li>
-                    {% endfor %}
-                </ul>
-            </div>
-            <div class="col-md-9">
-                <div class="tab-content" id="navSubListContent">
-                    {% for item in renderGroupSubs %}
-                        <div class="tab-pane fade {% if loop.first %}show active{% endif %}" id="navSubList-{{ loop.index }}" role="tabpanel" aria-labelledby="navSubListTab-{{ loop.index }}" tabindex="0">
-                            {% if "now" | date("Y-m-d H:i:s") < item.expire | date("Y-m-d H:i:s") %}
-                                <div class="mb-md-4 d-flex justify-content-center justify-content-md-between align-items-end">
-                                    <h1 class="d-none d-md-block">{{ item.name }}</h1>
-                                    <p>过期时间：{{ item.expire | date("Y-m-d H:i:s") }}</p>
-                                </div>
-                                <div class="accordion mb-3" id="accordion-{{ loop.index }}">
-                                    {% include 'subscribes/collapseSubscriptions.twig' %}
-                                    {% include 'subscribes/collapseAccounts.twig' %}
-                                    {% include 'subscribes/collapseShare.twig' %}
-                                </div>
-                            {% else %}
-                                <div class="alert alert-danger" role="alert">
-                                    该订阅已于
-                                    {{ item.expire }}
-                                    过期。
-                                </div>
-                            {% endif %}
-                        </div>
-                    {% else %}
-                        <div class="alert alert-warning" role="alert">您目前没有可用的分组。请联系管理员获取一个。</div>
-                    {% endfor %}
+    <div class="container mt-5 mb-5">
+        <div class="mb-5">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <h1>{{ group.name }}</h1>
+                    <p class="text-body-secondary">
+                        {{ expire }}
+                        过期
+                    </p>
                 </div>
+                <a class="btn btn-primary" href="{{ baseUrl }}/" role="button">返回</a>
             </div>
         </div>
+        {% if "now" | date("Y-m-d H:i:s") < expire | date("Y-m-d H:i:s") %}
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    <ul class="nav nav-pills flex-column">
+                        <li class="nav-item d-grid">
+                            <button class="nav-link active" id="navSubscribesTab" data-bs-toggle="pill" data-bs-target="#navSubscribes" type="button" role="tab" aria-controls="navSubscribes" aria-selected="true">
+                                订阅链接
+                            </button>
+                        </li>
+                        <li class="nav-item d-grid">
+                            <button class="nav-link" id="navAccountsTab" data-bs-toggle="pill" data-bs-target="#navAccounts" type="button" role="tab" aria-controls="navAccounts" aria-selected="false">
+                                账号信息
+                            </button>
+                        </li>
+                        <li class="nav-item d-grid">
+                            <button class="nav-link" id="navShareTab" data-bs-toggle="pill" data-bs-target="#navShare" type="button" role="tab" aria-controls="navShare" aria-selected="false">
+                                共享账号
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-md-9">
+                    <div class="tab-content" id="navSubListContent">
+                        <div class="tab-pane fade show active" id="navSubscribes" role="tabpanel" aria-labelledby="navSubscribesTab" tabindex="0">
+                            {% include 'subscribes/collapseSubscribes.twig' %}
+                        </div>
+                        <div class="tab-pane fade" id="navAccounts" role="tabpanel" aria-labelledby="navAccountsTab" tabindex="0">
+                            {% include 'subscribes/collapseAccounts.twig' %}
+                        </div>
+                        <div class="tab-pane fade" id="navShare" role="tabpanel" aria-labelledby="navShareTab" tabindex="0">
+                            {% include 'subscribes/collapseShare.twig' %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="alert alert-danger" role="alert">
+                该订阅已于
+                {{ expire }}
+                过期。
+            </div>
+        {% endif %}
     </div>
     <!-- End subscription list -->
 

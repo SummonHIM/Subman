@@ -2,6 +2,7 @@
 Subscribe Manager
 
 ## 如何使用
+1. `php.ini` 需启用 `intl, pdo_mysql`
 1. 向数据库导入位于 `resources/sql/subs.sql` 的脚本。
 2. `composer install`
 3. 复制 `config.example.php` 到 `config.php`。填入适当的数据。

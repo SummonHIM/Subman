@@ -1,0 +1,41 @@
+{% extends "base.twig" %}
+{% block title %}
+    {{ username }}
+    的订阅
+{% endblock %}
+
+{% block content %}
+    {% include 'component/navbar.twig' %}
+    <div class="container mt-5 mb-5">
+        <div class="mb-5">
+            <h1>{{ username }}</h1>
+        </div>
+
+        {% if renderGroupSubs is not empty %}
+            <div class="table-responsive text-nowrap">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th scope="col">订阅名称</th>
+                            <th scope="col">过期日</th>
+                            <th scope="col" class="text-end">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody class="align-middle">
+                        {% for item in renderGroupSubs %}
+                            <tr>
+                                <td>{{ item.name }}</td>
+                                <td>{{ item.expire | date("Y-m-d H:i:s") }}</td>
+                                <td class="text-end">
+                                    <a class="btn btn-primary" href="{{ baseUrl }}/subscribe?gid={{ item.gid }}" role="button">访问</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="alert alert-warning" role="alert">您目前没有可用的分组。请联系管理员获取一个。</div>
+        {% endif %}
+    </div>
+{% endblock %}

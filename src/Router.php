@@ -43,7 +43,10 @@ class Router
         if ($_SERVER["REQUEST_METHOD"] == "GET") {
             switch (parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH)) {
                 case $baseUrl . '/':
-                    Subscribes::renderSubscribes();
+                    Subscribes::renderSubscribeLists();
+                    break;
+                case $baseUrl . '/subscribe':
+                    Subscribes::renderSubscribe();
                     break;
                 case $baseUrl . '/login':
                     Authentication::onRenderLogin();

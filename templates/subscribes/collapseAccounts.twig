@@ -1,37 +1,44 @@
-{% block collapseAccounts %}
-    <div class="accordion-item">
-        <h2 class="accordion-header">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAccounts-{{ loop.index }}" aria-expanded="false" aria-controls="collapseAccounts-{{ loop.index }}">
-                账号信息
+<div class="row align-items-center mb-3">
+    <label class="col-form-label">官网</label>
+    <div class="col-sm-10">
+        <input class="form-control" type="text" value="{{ group.sub_hp }}" readonly>
+    </div>
+    <div class="btn-group col-sm-2">
+        <a class="btn btn-outline-primary" href="{{ group.sub_hp }}" target="_blank">访问</a>
+    </div>
+</div>
+
+<div class="row align-items-center mb-3">
+    <label class="col-form-label">账号</label>
+    <div class="col-sm-10">
+        <input class="form-control" type="text" id="group-sub_account" value="{{ group.sub_account }}" readonly>
+    </div>
+    <div class="btn-group col-sm-2">
+        <button type="button" class="btn btn-outline-primary" onclick="copyTextToClipboard(this)" data-copyid="group-sub_account">复制</a>
+    </div>
+</div>
+
+<div class="row align-items-center mb-3">
+    <label class="col-form-label">密码</label>
+    <div class="col-sm-10">
+        <div class="input-group">
+            <input class="form-control" type="password" id="group-sub_password" value="{{ group.sub_password }}" readonly>
+            <button type="button" class="btn btn-outline-secondary" onclick="togglePasswordVisibility(this)" data-passid="group-sub_password" data-eyeid="group-sub_password-eye">
+                <ion-icon name="eye-off" id="group-sub_password-eye"></ion-icon>
             </button>
-        </h2>
-        <div id="collapseAccounts-{{ loop.index }}" class="accordion-collapse collapse">
-            <div
-                class="accordion-body">
-                <!-- Begin collapseAccounts -->
-                <div class="row align-items-center mb-3">
-                    <label class="col-form-label">官网</label>
-                    <div class="col-sm-10">
-                        <input class="form-control" type="text" value="{{ item.sub_hp }}" readonly>
-                    </div>
-                    <div class="btn-group col-sm-2" role="group">
-                        <a class="btn btn-outline-primary" href="{{ item.sub_hp }}" target="_blank">访问</a>
-                    </div>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label card-text">账号</label>
-                    <input class="form-control" type="text" value="{{ item.sub_account }}" readonly>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label card-text">密码</label>
-                    <input class="form-control" type="text" value="{{ item.sub_password }}" readonly>
-                </div>
-                <div>
-                    <label class="form-label card-text">邀请码</label>
-                    <input class="form-control" type="text" value="{{ item.sub_aff }}" readonly>
-                </div>
-                <!-- End collapseAccounts -->
-            </div>
         </div>
     </div>
-{% endblock %}
+    <div class="btn-group col-sm-2">
+        <button type="button" class="btn btn-outline-primary" onclick="copyTextToClipboard(this)" data-copyid="group-sub_password">复制</a>
+    </div>
+</div>
+
+<div class="row align-items-center mb-3">
+    <label class="col-form-label">邀请码</label>
+    <div class="col-sm-10">
+        <input class="form-control" type="text" id="group-sub_aff" value="{{ group.sub_aff }}" readonly>
+    </div>
+    <div class="btn-group col-sm-2">
+        <button type="button" class="btn btn-outline-primary" onclick="copyTextToClipboard(this)" data-copyid="group-sub_aff">复制</a>
+    </div>
+</div>

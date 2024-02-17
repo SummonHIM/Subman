@@ -168,15 +168,13 @@ class Group extends Administrator
         // 检查字符串长度和规范
         $lengthChecks = [
             'url' => 255,
-            'options' => 255,
+            'converter_options' => 255,
             'name' => 25,
-            'target' => 15,
         ];
         $itemName = [
             'url' => '订阅网址',
-            'options' => '转换选项',
+            'converter_options' => '转换选项',
             'name' => '订阅名称',
-            'target' => '转换目标',
         ];
 
         // 检查是否有空值
@@ -230,8 +228,7 @@ class Group extends Administrator
                     'name' => $data['name'],
                     'url' => $data['url'],
                     'converter' => $data['converter'],
-                    'target' => $data['target'],
-                    'options' => $data['options']
+                    'converter_options' => $data['converter_options']
                 ),
                 array(
                     'sid' => $data['sid'],
@@ -301,8 +298,7 @@ class Group extends Administrator
                     'name' => $data['name'],
                     'url' => $data['url'],
                     'converter' => $data['converter'],
-                    'target' => $data['target'],
-                    'options' => $data['options']
+                    'converter_options' => $data['converter_options']
                 ),
             );
         } catch (\PDOException $e) {
