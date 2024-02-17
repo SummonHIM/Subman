@@ -157,7 +157,7 @@ class Subscribes
 
         // 检查订阅是否已经过期
         if (date('Y-m-d H:i:s') > $expire) {
-            $url = $cfg->getValue('WebSite', 'SubConverterUrl') . "target=" . (isset($_GET['target']) ? $_GET['target'] : 'auto') . "&url=https%3A%2F%2Fservice.summonhim.top%2Ffiles%2Fexpire";
+            $url = $cfg->getValue('WebSite', 'SubConverterUrl') . "target=" . (isset($_GET['target']) ? $_GET['target'] : 'auto') . "&url=" . urlencode("ss://YWVzLTI1Ni1jZmI6RXhwaXJl@dns.google:14514#订阅已过期");
             echo json_encode(array(
                 'Status' => 'Expire',
                 'Message' => 'Your subscription has expired.',

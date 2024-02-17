@@ -11,19 +11,19 @@
 
     <!-- Begin subscription list -->
     <div class="container mt-5 mb-5">
-        <div class="mb-5">
-            <div class="d-flex align-items-center justify-content-between">
-                <div>
-                    <h1>{{ group.name }}</h1>
-                    <p class="text-body-secondary">
-                        {{ expire }}
-                        过期
-                    </p>
-                </div>
-                <a class="btn btn-primary" href="{{ baseUrl }}/" role="button">返回</a>
-            </div>
-        </div>
         {% if "now" | date("Y-m-d H:i:s") < expire | date("Y-m-d H:i:s") %}
+            <div class="mb-5">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <h1>{{ group.name }}</h1>
+                        <p class="text-body-secondary">
+                            {{ expire }}
+                            过期
+                        </p>
+                    </div>
+                    <a class="btn btn-primary" href="{{ baseUrl }}/" role="button">返回</a>
+                </div>
+            </div>
             <div class="row">
                 <div class="col-md-3 mb-3">
                     <ul class="nav nav-pills flex-column">
@@ -60,9 +60,12 @@
             </div>
         {% else %}
             <div class="alert alert-danger" role="alert">
-                该订阅已于
-                {{ expire }}
-                过期。
+                <div class="d-sm-flex align-items-center justify-content-between">
+                    该订阅已于
+                    {{ expire }}
+                    过期。
+                    <a class="btn btn-danger" href="{{ baseUrl }}/" role="button">返回</a>
+                </div>
             </div>
         {% endif %}
     </div>
