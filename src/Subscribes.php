@@ -60,7 +60,7 @@ class Subscribes
 
             // 将变量传入 twig
             $twigVar = array(
-                'subApiUrl' => $_SERVER['REQUEST_SCHEME'] ?? "http" . '://' . $_SERVER['HTTP_HOST'] . $cfg->getValue('WebSite', 'BaseUrl') . '/api/subscribe',
+                'subApiUrl' => ($_SERVER['REQUEST_SCHEME'] ?? "http") . '://' . $_SERVER['HTTP_HOST'] . $cfg->getValue('WebSite', 'BaseUrl') . '/api/subscribe',
                 'baseUrl' => $cfg->getValue('WebSite', 'BaseUrl'),
                 'username' => $_SESSION['username'],
                 'uid' => $_SESSION['uid'],
