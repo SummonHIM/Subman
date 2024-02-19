@@ -25,7 +25,7 @@
                         {% for item in renderGroupSubs %}
                             <tr>
                                 <td>{{ item.name }}</td>
-                                <td>{{ item.expire | date("Y-m-d H:i:s") }}</td>
+                                <td {% if "now" | date("Y-m-d H:i:s") > item.expire | date("Y-m-d H:i:s") %} class="text-danger" {% endif %}>{{ item.expire | date("Y-m-d H:i:s") }}</td>
                                 <td class="text-end">
                                     <a class="btn btn-primary" href="{{ baseUrl }}/subscribe?gid={{ item.gid }}" role="button">访问</a>
                                 </td>

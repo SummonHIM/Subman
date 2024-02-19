@@ -8,20 +8,19 @@ use Subman\Database;
 class Subscribes
 {
     /**
-     * 检查两个 string 最后一个字符与第一个字符是否在同一Unicode区块
+     * 检查两个 string 最后一个字符与第一个字符是否为中日韩等文
      * @param string $first 第一个字符串
      * @param string $last 第二个字符串
      * @return bool 若相等则 true 若不相等则 false
      */
-    function isSameUTFBlock(string $first, string $last): bool
+    function isStrNeedSpace(string $first, string $last): bool
     {
-        // 获取字符的 Unicode 区块代码
-        $blockCodeFirst = \IntlChar::getBlockCode(ord(mb_substr($first, -1)));
-        $blockCodeEnd = \IntlChar::getBlockCode(ord(mb_substr($last, 0, 1)));
+        // 正则表达式
+        $patternFirst = '/[\p{Bopomofo}\p{Han}\p{Hiragana}\p{Katakana}]$/u';
+        $patternLast = '/^[\p{Bopomofo}\p{Han}\p{Hiragana}\p{Katakana}]/u';
 
         // 比较区块代码是否相同
-        if ($blockCodeFirst === $blockCodeEnd) return true;
-        else return false;
+        return (preg_match($patternFirst, $first) && preg_match($patternLast, $last));
     }
 
     /**
@@ -50,11 +49,11 @@ class Subscribes
                 $group = $db->getRowbyName("groups", '*', array("gid" => $_GET['gid']));
                 $group["subscribes"] = $db->getRowbyNameOrder("group_subscribes", 'sid, gid, name, converter', array("gid" => $_GET['gid']), array("orderlist" => "ASC"), true);
                 foreach ($group["subscribes"] as &$subscribe) {
-                    $subscribe["suggestion_name"] = $group["name"] . ($self->isSameUTFBlock($group["name"], $subscribe["name"]) ? '' : ' ') . $subscribe["name"];
+                    $subscribe["suggestion_name"] = $group["name"] . ($self->isStrNeedSpace($group["name"], $subscribe["name"]) ? '' : ' ') . $subscribe["name"];
                 }
                 $group["share"] = $db->getRowbyName("group_share", 'name, account, password, manage', array("gid" => $_GET['gid']), true);
                 foreach ($group["share"] as &$share) {
-                    $share["suggestion_name"] = $group["name"] . ($self->isSameUTFBlock($group["name"], $share["name"]) ? '' : ' ') . $share["name"];
+                    $share["suggestion_name"] = $group["name"] . ($self->isStrNeedSpace($group["name"], $share["name"]) ? '' : ' ') . $share["name"];
                 }
             }
 
@@ -173,7 +172,7 @@ class Subscribes
             $url = $subscribes['url'];
         } else {
             // 生成文件名
-            $suggestionName = $groups['name'] . ($self->isSameUTFBlock($groups['name'], $subscribes['name']) ? '' : ' ') . $subscribes['name'];
+            $suggestionName = $groups['name'] . ($self->isStrNeedSpace($groups['name'], $subscribes['name']) ? '' : ' ') . $subscribes['name'];
 
             // 如果使用改版订阅，则生成 subconverter 链接
             $url = $cfg->getValue('WebSite', 'SubConverterUrl') . "target=" . (isset($_GET['target']) ? $_GET['target'] : 'auto') . "&url=" . urlencode($subscribes['url']) . "&filename=" . urlencode($suggestionName) . "&" . $subscribes['converter_options'];
