@@ -6,27 +6,27 @@
 
     <div class="row align-items-center mb-3">
         <label class="col-form-label">{{ share.suggestion_name }}</label>
-        <div class="col-sm-10">
+        <div class="col-md">
             <input class="form-control" type="text" value="{{ share.manage }}" readonly>
         </div>
-        <div class="btn-group col-sm-2">
+        <div class="btn-group col-md-3">
             <a class="btn btn-outline-primary" href="{{ share.manage }}" target="_blank">访问</a>
         </div>
     </div>
 
     <div class="row align-items-center mb-3">
         <label class="col-form-label">账号</label>
-        <div class="col-sm-10">
+        <div class="col-md">
             <input class="form-control" type="text" id="share-account-{{ loop.index }}" value="{{ share.account }}" readonly>
         </div>
-        <div class="btn-group col-sm-2">
+        <div class="btn-group col-md-3">
             <button type="button" class="btn btn-outline-primary" onclick="copyTextToClipboard(this)" data-copyid="share-account-{{ loop.index }}">复制</a>
         </div>
     </div>
 
     <div class="row align-items-center mb-3">
     <label class="col-form-label">密码</label>
-    <div class="col-sm-10">
+    <div class="col-md">
         <div class="input-group">
             <input class="form-control" type="password" id="share-password-{{ loop.index }}" value="{{ share.password }}" readonly>
             <button type="button" class="btn btn-outline-secondary" onclick="togglePasswordVisibility(this)" data-passid="share-password-{{ loop.index }}" data-eyeid="share-password-eye-{{ loop.index }}">
@@ -34,7 +34,7 @@
             </button>
         </div>
     </div>
-    <div class="btn-group col-sm-2">
+    <div class="btn-group col-md-3">
         <button type="button" class="btn btn-outline-primary" onclick="copyTextToClipboard(this)" data-copyid="share-password-{{ loop.index }}">复制</a>
     </div>
 </div>

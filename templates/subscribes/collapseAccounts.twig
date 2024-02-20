@@ -1,26 +1,26 @@
 <div class="row align-items-center mb-3">
     <label class="col-form-label">官网</label>
-    <div class="col-sm-10">
+    <div class="col-md">
         <input class="form-control" type="text" value="{{ group.sub_hp }}" readonly>
     </div>
-    <div class="btn-group col-sm-2">
+    <div class="btn-group col-md-3">
         <a class="btn btn-outline-primary" href="{{ group.sub_hp }}" target="_blank">访问</a>
     </div>
 </div>
 
 <div class="row align-items-center mb-3">
     <label class="col-form-label">账号</label>
-    <div class="col-sm-10">
+    <div class="col-md">
         <input class="form-control" type="text" id="group-sub_account" value="{{ group.sub_account }}" readonly>
     </div>
-    <div class="btn-group col-sm-2">
+    <div class="btn-group col-md-3">
         <button type="button" class="btn btn-outline-primary" onclick="copyTextToClipboard(this)" data-copyid="group-sub_account">复制</a>
     </div>
 </div>
 
 <div class="row align-items-center mb-3">
     <label class="col-form-label">密码</label>
-    <div class="col-sm-10">
+    <div class="col-md">
         <div class="input-group">
             <input class="form-control" type="password" id="group-sub_password" value="{{ group.sub_password }}" readonly>
             <button type="button" class="btn btn-outline-secondary" onclick="togglePasswordVisibility(this)" data-passid="group-sub_password" data-eyeid="group-sub_password-eye">
@@ -28,17 +28,17 @@
             </button>
         </div>
     </div>
-    <div class="btn-group col-sm-2">
+    <div class="btn-group col-md-3">
         <button type="button" class="btn btn-outline-primary" onclick="copyTextToClipboard(this)" data-copyid="group-sub_password">复制</a>
     </div>
 </div>
 
 <div class="row align-items-center mb-3">
     <label class="col-form-label">邀请码</label>
-    <div class="col-sm-10">
+    <div class="col-md">
         <input class="form-control" type="text" id="group-sub_aff" value="{{ group.sub_aff }}" readonly>
     </div>
-    <div class="btn-group col-sm-2">
+    <div class="btn-group col-md-3">
         <button type="button" class="btn btn-outline-primary" onclick="copyTextToClipboard(this)" data-copyid="group-sub_aff">复制</a>
     </div>
 </div>

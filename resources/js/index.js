@@ -115,16 +115,37 @@ function onClickDeleteNewTbody(self) {
 
 function copyTextToClipboard(self) {
     var text = document.getElementById(self.getAttribute("data-copyid"));
+    var successBtn;
+    if (self.getAttribute("data-successid") !== null)
+        successBtn = document.getElementById(self.getAttribute("data-successid"));
+    else successBtn = self;
+    var originalText = successBtn.innerText;
 
     text.select();
     text.setSelectionRange(0, 99999); // 兼容移动设备
 
+    var clickboardText;
     if (self.getAttribute("data-orgsub") === "true") {
-        navigator.clipboard.writeText(text.value + "&original=true");
+        clickboardText = text.value + "&original=true";
     } else {
-        navigator.clipboard.writeText(text.value);
+        clickboardText = text.value;
     }
-    
+
+    navigator.clipboard
+        .writeText(clickboardText)
+        .then(function () {
+            successBtn.disabled = true;
+            successBtn.innerText = "✓ 复制成功";
+            clearTimeout(successBtn.timer);
+            successBtn.timer = setTimeout(function () {
+                successBtn.innerText = originalText;
+                successBtn.disabled = false;
+            }, 1000);
+        })
+        .catch(function (error) {
+            console.error("复制失败：", error);
+            successBtn.innerText = originalText;
+        });
 }
 
 function togglePasswordVisibility(self) {

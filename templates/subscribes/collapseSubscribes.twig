@@ -17,7 +17,7 @@
 
 
         <div class="btn-group col-md-3">
-            <button type="button" class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+            <button type="button" class="btn btn-outline-primary dropdown-toggle" id="subscribe-dropdown-{{ loop.index }}" data-bs-toggle="dropdown" aria-expanded="false">
                 导入到
             </button>
             <ul class="dropdown-menu">
@@ -33,12 +33,12 @@
                     </li>
                 {% endif %}
                 <li>
-                    <button class="dropdown-item" onclick="copyTextToClipboard(this)" data-copyid="subscribe-URL-{{ loop.index }}">剪切板</a>
+                    <button class="dropdown-item" onclick="copyTextToClipboard(this)" data-copyid="subscribe-URL-{{ loop.index }}" data-successid="subscribe-dropdown-{{ loop.index }}">剪切板</a>
                 </li>
                 {% if sub.converter == 1 %}
                     <li><hr class="dropdown-divider"></li>
                     <li>
-                        <button class="dropdown-item" onclick="copyTextToClipboard(this)" data-copyid="subscribe-URL-{{ loop.index }}" data-orgsub="true">复制原订阅</a>
+                        <button class="dropdown-item" onclick="copyTextToClipboard(this)" data-copyid="subscribe-URL-{{ loop.index }}" data-successid="subscribe-dropdown-{{ loop.index }}" data-orgsub="true">复制原订阅</a>
                     </li>
                 {% endif %}
             </ul>
