@@ -30,7 +30,7 @@
         <div class="input-group">
             <input class="form-control" type="password" id="share-password-{{ loop.index }}" value="{{ share.password }}" readonly>
             <button type="button" class="btn btn-outline-secondary" onclick="togglePasswordVisibility(this)" data-passid="share-password-{{ loop.index }}" data-eyeid="share-password-eye-{{ loop.index }}">
-                <ion-icon name="eye-off" id="share-password-eye-{{ loop.index }}"></ion-icon>
+                <ion-icon name="eye-off" class="d-flex" id="share-password-eye-{{ loop.index }}"></ion-icon>
             </button>
         </div>
     </div>
