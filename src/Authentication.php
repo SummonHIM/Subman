@@ -65,6 +65,10 @@ class Authentication
         return $ret;
     }
 
+    /**
+     * 检查保持登录的 Session ID
+     * @param string $sessionID Session ID
+     */
     private function checkSession(string $sessionID): void
     {
         $data = $this->db->getRowbyName("user_sessions", "uid, expire", array('session_id' => $sessionID));
@@ -86,17 +90,18 @@ class Authentication
             $_SESSION['uid'] = $data['uid'];
             $_SESSION['username'] = $this->db->getRowbyName("users", "username", array("uid" => $data['uid']))['username'];
         } else {
-            $this->db->deleteRow(
-                "user_sessions",
-                array(
-                    'session_id' => $sessionID,
-                    'uid' => $data['uid']
-                )
-            );
             setcookie("sm_session", "", time() - 3600, "/");
+        }
+
+        if (!empty($data['uid'])) {
+            $this->deleteExpireSession($data['uid']);
         }
     }
 
+    /**
+     * 创建保持登录 Session
+     * @param string $uid 用户 ID
+     */
     private function createSession(string $uid): void
     {
         if (empty($uid) || !$this->uuid->checkUUID($uid))
@@ -118,6 +123,26 @@ class Authentication
             setcookie("sm_session", $newSessionID, $newExpire, "/");
         } catch (\PDOException) {
             return;
+        }
+    }
+
+    /**
+     * 删除过期 Session
+     * @param string $uid 用户 ID
+     */
+    private function deleteExpireSession(string $uid): void
+    {
+        $data = $this->db->getRowbyName("user_sessions", "*", array('uid' => $uid), true);
+        foreach ($data as $i) {
+            if (date('Y-m-d H:i:s') > $i['expire']) {
+                $this->db->deleteRow(
+                    "user_sessions",
+                    array(
+                        'session_id' => $i['session_id'],
+                        'uid' => $i['uid']
+                    )
+                );
+            }
         }
     }
 
@@ -169,6 +194,9 @@ class Authentication
         if (isset($_POST['keepLogin']))
             $self->createSession($loginResult['uid']);
 
+        if (!empty($loginResult['uid']))
+            $self->deleteExpireSession($loginResult['uid']);
+
         header("Location: " . $baseUrl . "/");
     }
 
@@ -181,15 +209,15 @@ class Authentication
         $baseUrl = $self->cfg->getValue('WebSite', 'BaseUrl');
 
         setcookie("sm_session", "", time() - 3600, "/");
-
-        session_destroy();
-
         $self->db->deleteRow(
             "user_sessions",
             array(
                 'session_id' => $_COOKIE['sm_session'],
+                'uid' => $_SESSION['uid']
             )
         );
+
+        session_destroy();
 
         header("Location: " . $baseUrl . "/");
     }
