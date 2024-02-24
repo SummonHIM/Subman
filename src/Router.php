@@ -63,9 +63,6 @@ class Router
                 case $baseUrl . '/userconfig':
                     UserConfig::renderUserConfig();
                     break;
-                case $baseUrl . '/clients':
-                    Clients::renderClients();
-                    break;
                 case $baseUrl . '/api/subscribe':
                     Subscribes::getSubscribesUrl();
                     break;

@@ -24,8 +24,6 @@ $cfg['WebSite']['BaseUrl'] = "";
 $cfg['WebSite']['Debug'] = false;
 // 自定义 SubConverter 服务器
 $cfg['WebSite']['SubConverterUrl'] = "https://sub.xeton.dev/sub?";
-// 自定义客户端介绍页面图片CDN，其中链接需要直到 resources 目录，且目录需和 resources 目录一致。
-$cfg['WebSite']['ClientImgCDN'] = "";
 
 /**
  * 管理员页面设置
