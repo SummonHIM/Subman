@@ -39,7 +39,7 @@ class Subscribes
             // 获取用户信息
             $users = $db->getRowbyName("users", 'isadmin, custom_config', array("uid" => $_SESSION['uid']));
             // 获取过期时间
-            $expire = $db->getRowbyName("user_groups", 'expire', array("uid" => $_SESSION['uid'], "gid" => $_GET['gid']))['expire'];
+            $expire = $db->getRowbyName("user_groups", 'expire', array("uid" => $_SESSION['uid'], "gid" => $_GET['gid']))['expire'] ?? null;
             // 初始化 group
             $group = [];
 

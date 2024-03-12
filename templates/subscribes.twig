@@ -11,60 +11,70 @@
 
     <!-- Begin subscription list -->
     <div class="container mt-5 mb-5">
-        {% if "now" | date("Y-m-d H:i:s") < expire | date("Y-m-d H:i:s") %}
-            <div class="mb-5">
-                <div class="d-flex align-items-center justify-content-between">
-                    <div>
-                        <h1>{{ group.name }}</h1>
-                        <p class="text-body-secondary">
-                            {{ expire }}
-                            过期
-                        </p>
-                    </div>
-                    <a class="btn btn-primary" href="{{ baseUrl }}/" role="button">返回</a>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-3 mb-3">
-                    <ul class="nav nav-pills flex-column">
-                        <li class="nav-item d-grid">
-                            <button class="nav-link active" id="navSubscribesTab" data-bs-toggle="pill" data-bs-target="#navSubscribes" type="button" role="tab" aria-controls="navSubscribes" aria-selected="true">
-                                订阅链接
-                            </button>
-                        </li>
-                        <li class="nav-item d-grid">
-                            <button class="nav-link" id="navAccountsTab" data-bs-toggle="pill" data-bs-target="#navAccounts" type="button" role="tab" aria-controls="navAccounts" aria-selected="false">
-                                账号信息
-                            </button>
-                        </li>
-                        <li class="nav-item d-grid">
-                            <button class="nav-link" id="navShareTab" data-bs-toggle="pill" data-bs-target="#navShare" type="button" role="tab" aria-controls="navShare" aria-selected="false">
-                                共享账号
-                            </button>
-                        </li>
-                    </ul>
-                </div>
-                <div class="col-md-9">
-                    <div class="tab-content" id="navSubListContent">
-                        <div class="tab-pane fade show active" id="navSubscribes" role="tabpanel" aria-labelledby="navSubscribesTab" tabindex="0">
-                            {% include 'subscribes/collapseSubscribes.twig' %}
+        {% if expire is not empty %}
+            {% if "now" | date("Y-m-d H:i:s") < expire | date("Y-m-d H:i:s") %}
+                <div class="mb-5">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h1>{{ group.name }}</h1>
+                            <p class="text-body-secondary">
+                                {{ expire }}
+                                过期
+                            </p>
                         </div>
-                        <div class="tab-pane fade" id="navAccounts" role="tabpanel" aria-labelledby="navAccountsTab" tabindex="0">
-                            {% include 'subscribes/collapseAccounts.twig' %}
-                        </div>
-                        <div class="tab-pane fade" id="navShare" role="tabpanel" aria-labelledby="navShareTab" tabindex="0">
-                            {% include 'subscribes/collapseShare.twig' %}
-                        </div>
+                        <a class="btn btn-primary" href="{{ baseUrl }}/" role="button">返回</a>
                     </div>
                 </div>
-            </div>
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <ul class="nav nav-pills flex-column">
+                            <li class="nav-item d-grid">
+                                <button class="nav-link active" id="navSubscribesTab" data-bs-toggle="pill" data-bs-target="#navSubscribes" type="button" role="tab" aria-controls="navSubscribes" aria-selected="true">
+                                    订阅链接
+                                </button>
+                            </li>
+                            <li class="nav-item d-grid">
+                                <button class="nav-link" id="navAccountsTab" data-bs-toggle="pill" data-bs-target="#navAccounts" type="button" role="tab" aria-controls="navAccounts" aria-selected="false">
+                                    账号信息
+                                </button>
+                            </li>
+                            <li class="nav-item d-grid">
+                                <button class="nav-link" id="navShareTab" data-bs-toggle="pill" data-bs-target="#navShare" type="button" role="tab" aria-controls="navShare" aria-selected="false">
+                                    共享账号
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                    <hr class="mt-4 mb-4 d-block d-md-none">
+                    <div class="col-md-9">
+                        <div class="tab-content" id="navSubListContent">
+                            <div class="tab-pane fade show active" id="navSubscribes" role="tabpanel" aria-labelledby="navSubscribesTab" tabindex="0">
+                                {% include 'subscribes/collapseSubscribes.twig' %}
+                            </div>
+                            <div class="tab-pane fade" id="navAccounts" role="tabpanel" aria-labelledby="navAccountsTab" tabindex="0">
+                                {% include 'subscribes/collapseAccounts.twig' %}
+                            </div>
+                            <div class="tab-pane fade" id="navShare" role="tabpanel" aria-labelledby="navShareTab" tabindex="0">
+                                {% include 'subscribes/collapseShare.twig' %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="alert alert-danger" role="alert">
+                    <div class="d-flex align-items-center justify-content-between">
+                        该订阅已于
+                        {{ expire }}
+                        过期。
+                        <a class="btn btn-danger text-nowrap" href="{{ baseUrl }}/" role="button">返回</a>
+                    </div>
+                </div>
+            {% endif %}
         {% else %}
             <div class="alert alert-danger" role="alert">
-                <div class="d-sm-flex align-items-center justify-content-between">
-                    该订阅已于
-                    {{ expire }}
-                    过期。
-                    <a class="btn btn-danger" href="{{ baseUrl }}/" role="button">返回</a>
+                <div class="d-flex align-items-center justify-content-between">
+                    未知订阅。
+                    <a class="btn btn-danger text-nowrap" href="{{ baseUrl }}/" role="button">返回</a>
                 </div>
             </div>
         {% endif %}
