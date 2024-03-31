@@ -31,6 +31,9 @@
                     <li>
                         <a class="dropdown-item" href="surge:///install-config?url={{ subUrl | url_encode ~ '&target=surge' | url_encode }}">Surge</a>
                     </li>
+                    <li>
+                        <a class="dropdown-item" href="sing-box://import-remote-profile?url={{ subUrl | url_encode ~ '&target=singbox' | url_encode }}#{{ sub.suggestion_name | url_encode }}">Sing-box</a>
+                    </li>
                 {% endif %}
                 <li>
                     <button class="dropdown-item" onclick="copyTextToClipboard(this)" data-copyid="subscribe-URL-{{ loop.index }}" data-successid="subscribe-dropdown-{{ loop.index }}">剪切板</a>
