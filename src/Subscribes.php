@@ -159,6 +159,8 @@ class Subscribes
         else {
             if (strpos($_SERVER['HTTP_USER_AGENT'], 'clash-verge') !== false)
                 $target = 'clash';
+            elseif (strpos($_SERVER['HTTP_USER_AGENT'], 'clash-nyanpasu') !== false)
+                $target = 'clash';
             elseif (strpos($_SERVER['HTTP_USER_AGENT'], 'ClashMetaForAndroid') !== false)
                 $target = 'clash';
             elseif (strpos($_SERVER['HTTP_USER_AGENT'], 'sing-box') !== false)
